@@ -8,10 +8,9 @@
 
 ## 🔑 Supabase 연동 정보
 - **프로젝트 URL**: https://xhdufkgkonudblmdpclu.supabase.co
-- **Anon Key**: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhoZHVma2drb251ZGJsbWRwY2x1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkzMDUwOTEsImV4cCI6MjA3NDg4MTA5MX0.fxA6ptKjB0WqH4pDsabDgy4lUXYRpLkCY1AienuYs8g
-- **Service Role Key**: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhoZHVma2drb251ZGJsbWRwY2x1Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1OTMwNTA5MSwiZXhwIjoyMDc0ODgxMDkxfQ.73OujxvQjmT5B9RJ6L9w1TgUo80c-uhFQDPRjtpCqfg
 - **프로젝트 ID**: xhdufkgkonudblmdpclu
 - **연동 상태**: ✅ 테이블 생성 완료
+- **보안**: API 키는 .env 파일에서 관리 (GitHub 업로드 제외)
 
 ## 🗂️ 현재 프로젝트 구조
 
