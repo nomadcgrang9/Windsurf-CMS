@@ -1,0 +1,273 @@
+.admin-help-tab {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.admin-help-tab h2 {
+  margin-bottom: 24px;
+  color: #333;
+}
+
+/* 섹션 */
+.help-section {
+  margin-bottom: 16px;
+  border: 1px solid #E0E0E0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.section-toggle {
+  width: 100%;
+  padding: 16px;
+  background: #F5F5F5;
+  border: none;
+  text-align: left;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.section-toggle:hover {
+  background: #E8E8E8;
+}
+
+.section-content {
+  padding: 20px;
+  background: white;
+}
+
+/* 리셋 섹션 */
+.reset-container {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.reset-input {
+  flex: 1;
+  padding: 12px;
+  font-size: 14px;
+  border: 2px solid #E0E0E0;
+  border-radius: 6px;
+}
+
+.reset-input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.reset-btn {
+  padding: 12px 24px;
+  background: #ff7575;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.reset-btn:hover {
+  background: #ff4c4c;
+}
+
+.reset-guide {
+  padding: 16px;
+  background: #F9F9F9;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #666;
+}
+
+.reset-guide p {
+  margin: 0 0 8px 0;
+  font-weight: 600;
+}
+
+.reset-guide ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.reset-guide li {
+  margin-bottom: 4px;
+}
+
+/* 학급 선택 섹션 */
+.class-select-container {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.class-input {
+  flex: 1;
+  padding: 12px;
+  font-size: 14px;
+  border: 2px solid #E0E0E0;
+  border-radius: 6px;
+}
+
+.class-input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.query-btn {
+  padding: 12px 24px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.query-btn:hover {
+  background: #5568d3;
+}
+
+/* 학생 컨테이너 */
+.students-container h3 {
+  margin-bottom: 16px;
+  color: #333;
+  font-size: 18px;
+}
+
+.loading-message {
+  text-align: center;
+  padding: 40px;
+  color: #999;
+  font-size: 16px;
+}
+
+/* 학생 그리드 */
+.students-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+@media (min-width: 1400px) {
+  .students-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 999px) {
+  .students-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .students-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 학생 카드 */
+.student-card {
+  padding: 16px;
+  background: #FFFFFF;
+  border: 2px solid #E0E0E0;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  transition: box-shadow 0.2s;
+}
+
+.student-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.student-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+}
+
+.student-status-icon {
+  font-size: 24px;
+  margin: 4px 0;
+}
+
+/* 버튼 그룹 */
+.student-buttons {
+  display: flex;
+  gap: 4px;
+  width: 100%;
+}
+
+.student-buttons button {
+  flex: 1;
+  padding: 8px 4px;
+  border: 2px solid;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+/* 도와줄래 버튼 */
+.btn-requesting {
+  background: #FFB380;
+  border-color: #FFB380;
+  color: white;
+}
+
+.btn-requesting:hover {
+  background: #FF9A5C;
+}
+
+.btn-requesting.active {
+  background: #FF8C42;
+  border-color: #FF6B00;
+  border-width: 3px;
+  box-shadow: 0 0 8px rgba(255, 140, 66, 0.5);
+}
+
+/* 도와줄게 버튼 */
+.btn-helping {
+  background: #A8D8F0;
+  border-color: #A8D8F0;
+  color: white;
+}
+
+.btn-helping:hover {
+  background: #8FD0EC;
+}
+
+.btn-helping.active {
+  background: #7BC8E8;
+  border-color: #4AB8E0;
+  border-width: 3px;
+  box-shadow: 0 0 8px rgba(123, 200, 232, 0.5);
+}
+
+/* 해제 버튼 */
+.btn-cancel {
+  background: #ff7575;
+  border-color: #ff7575;
+  color: white;
+}
+
+.btn-cancel:hover:not(:disabled) {
+  background: #ff4c4c;
+}
+
+.btn-cancel:disabled {
+  background: #E8E8E8;
+  border-color: #E8E8E8;
+  color: #999;
+  cursor: not-allowed;
+}

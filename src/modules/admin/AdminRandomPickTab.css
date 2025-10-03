@@ -1,0 +1,271 @@
+/* 뽑기 관리 탭 스타일 */
+
+.admin-random-pick-tab {
+  width: 100%;
+}
+
+.admin-random-pick-tab h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 24px;
+}
+
+/* 섹션 스타일 */
+.pick-section {
+  margin-bottom: 24px;
+  border: 1px solid #E0E0E0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.section-toggle {
+  width: 100%;
+  padding: 16px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  background: #F5F5F5;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.section-toggle:hover {
+  background: #EBEBEB;
+}
+
+.section-content {
+  padding: 24px;
+  background: #FFFFFF;
+}
+
+/* 카테고리 이름 입력 */
+.category-name-input {
+  width: 100%;
+  padding: 12px;
+  font-size: 15px;
+  border: 2px solid #E0E0E0;
+  border-radius: 6px;
+  outline: none;
+  margin-bottom: 16px;
+}
+
+.category-name-input:focus {
+  border-color: #B8D4D9;
+}
+
+/* 아이템 목록 */
+.items-list {
+  margin-bottom: 16px;
+}
+
+.items-list label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.item-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.item-row input {
+  flex: 1;
+  padding: 10px;
+  font-size: 14px;
+  border: 2px solid #E0E0E0;
+  border-radius: 6px;
+  outline: none;
+}
+
+.item-row input:focus {
+  border-color: #B8D4D9;
+}
+
+.item-row button {
+  width: 36px;
+  height: 36px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #FF6B6B;
+  background: white;
+  border: 2px solid #FF6B6B;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.item-row button:hover {
+  background: #FF6B6B;
+  color: white;
+}
+
+.add-item-btn {
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #B8D4D9;
+  background: white;
+  border: 2px solid #B8D4D9;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.add-item-btn:hover {
+  background: #B8D4D9;
+  color: white;
+}
+
+/* 저장 버튼 */
+.save-btn {
+  width: 100%;
+  padding: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  color: white;
+  background: #B8D4D9;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.save-btn:hover {
+  background: #A0C4CC;
+}
+
+/* 카테고리 목록 */
+.categories-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.category-card {
+  padding: 16px;
+  border: 2px solid #E0E0E0;
+  border-radius: 8px;
+  background: #FAFAFA;
+}
+
+.category-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.category-header strong {
+  font-size: 16px;
+  color: #333;
+}
+
+.category-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.edit-btn-small,
+.delete-btn-small {
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.edit-btn-small {
+  color: white;
+  background: #B8D4D9;
+}
+
+.edit-btn-small:hover {
+  background: #A0C4CC;
+}
+
+.delete-btn-small {
+  color: white;
+  background: #FF6B6B;
+}
+
+.delete-btn-small:hover {
+  background: #FF5252;
+}
+
+.category-items {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+.category-status {
+  font-size: 14px;
+}
+
+.status-indicator {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.status-indicator.active {
+  color: #4CAF50;
+}
+
+.status-indicator.inactive {
+  color: #999;
+}
+
+/* 편집 폼 */
+.edit-form {
+  margin-top: 24px;
+  padding: 20px;
+  border: 2px solid #B8D4D9;
+  border-radius: 8px;
+  background: #F0F8FF;
+}
+
+.edit-form h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 16px;
+}
+
+.edit-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.edit-actions button {
+  flex: 1;
+  padding: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cancel-btn {
+  color: #666;
+  background: white;
+  border: 2px solid #E0E0E0;
+}
+
+.cancel-btn:hover {
+  background: #F5F5F5;
+}

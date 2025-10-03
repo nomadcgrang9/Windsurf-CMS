@@ -134,6 +134,23 @@
   background: #5568d3;
 }
 
+.cancel-assign-btn {
+  padding: 12px 24px;
+  background: #ff7575;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 16px;
+  margin-left: 12px;
+}
+
+.cancel-assign-btn:hover {
+  background: #ff4c4c;
+}
+
 /* 세션 선택 */
 .session-select {
   width: 100%;

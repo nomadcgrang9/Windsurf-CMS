@@ -11,6 +11,8 @@ import { incrementPoints } from './pointService'
  * 내 활성화된 도움 요청 조회
  * @param {string} studentId - 학번
  * @returns {Promise<Object|null>} 활성 요청 또는 null
+ *
+ * 40분 자동 만료 처리 포함
  */
 export const getMyActiveRequest = async (studentId) => {
   try {
@@ -24,6 +26,23 @@ export const getMyActiveRequest = async (studentId) => {
     if (error) {
       if (error.code === 'PGRST116') return null // 데이터 없음
       throw error
+    }
+
+    if (data && data.started_at) {
+      const startedAt = new Date(data.started_at)
+      const now = new Date()
+      const elapsedMs = now - startedAt
+      const EXPIRY_MS = 40 * 60 * 1000 // 40분
+
+      if (elapsedMs > EXPIRY_MS) {
+        await supabase
+          .from('help_requests')
+          .update({ is_active: false })
+          .eq('student_id', studentId)
+          .eq('is_active', true)
+
+        return null
+      }
     }
 
     return data
@@ -143,12 +162,14 @@ export const completeHelp = async (requestingStudentId, helpingStudentId) => {
  * 학급별 활성 도움 요청 조회 (도움알림판용)
  * @param {string} classInfo - 학급 정보 (예: "3-1")
  * @returns {Promise<Array>} 학생 목록 + 도움 상태
+ * 
+ * 40분 자동 만료 처리 포함
  */
 export const getActiveHelpRequests = async (classInfo) => {
   try {
     const [grade, classNumber] = classInfo.split('-').map(Number)
 
-    // students와 help_requests LEFT JOIN
+    // students와 help_requests LEFT JOIN (started_at 포함)
     const { data, error } = await supabase
       .from('students')
       .select(`
@@ -157,7 +178,8 @@ export const getActiveHelpRequests = async (classInfo) => {
         student_number,
         help_requests!left (
           status,
-          is_active
+          is_active,
+          started_at
         )
       `)
       .eq('grade', grade)
@@ -166,20 +188,34 @@ export const getActiveHelpRequests = async (classInfo) => {
 
     if (error) throw error
 
-    // 데이터 가공 (안전한 처리)
-    return data.map(student => {
+    const EXPIRY_MS = 40 * 60 * 1000 // 40분
+    const now = new Date()
+    const expiredStudentIds = []
+
+    // 데이터 가공 + 만료 체크
+    const result = data.map(student => {
       let activeRequest = null
       
       // help_requests 안전하게 처리
       if (student.help_requests) {
         if (Array.isArray(student.help_requests)) {
-          // 배열인 경우
           activeRequest = student.help_requests.find(req => req && req.is_active)
         } else if (typeof student.help_requests === 'object') {
-          // 객체인 경우
           if (student.help_requests.is_active) {
             activeRequest = student.help_requests
           }
+        }
+      }
+
+      // 40분 만료 체크
+      if (activeRequest && activeRequest.started_at) {
+        const startedAt = new Date(activeRequest.started_at)
+        const elapsedMs = now - startedAt
+
+        if (elapsedMs > EXPIRY_MS) {
+          console.log(`⏰ 도움 요청 만료: ${student.name} (${(elapsedMs / 60000).toFixed(1)}분 경과)`)
+          expiredStudentIds.push(student.student_id)
+          activeRequest = null // 만료된 요청은 null 처리
         }
       }
       
@@ -187,9 +223,24 @@ export const getActiveHelpRequests = async (classInfo) => {
         student_id: student.student_id,
         name: student.name,
         status: activeRequest?.status || null,
-        is_active: activeRequest?.is_active || false
+        is_active: activeRequest ? true : false
       }
     })
+
+    // 만료된 요청 일괄 비활성화
+    if (expiredStudentIds.length > 0) {
+      const { error: updateError } = await supabase
+        .from('help_requests')
+        .update({ is_active: false })
+        .in('student_id', expiredStudentIds)
+        .eq('is_active', true)
+
+      if (updateError) {
+        console.error('❌ 만료된 요청 비활성화 실패:', updateError)
+      }
+    }
+
+    return result
   } catch (error) {
     console.error('❌ 도움 요청 목록 조회 실패:', error.message)
     throw error

@@ -1,30 +1,63 @@
 /* 관리자 페이지 스타일 */
 
 .login-container.admin {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  background: linear-gradient(135deg, #B8B5FF 0%, #D4C5F9 100%);
 }
 
 .login-button.admin {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  background: #8B7FC7;
+  color: white;
+  font-family: 'DaHyun', 'Pretendard', sans-serif;
+  font-weight: 700;
+  border: 3px solid #FFFFFF;
+  box-shadow: 0 4px 12px rgba(139, 127, 199, 0.3);
 }
 
 .login-button.admin:hover:not(:disabled) {
-  box-shadow: 0 4px 12px rgba(240, 147, 251, 0.4);
+  background: #A89FD9;
+  box-shadow: 0 6px 16px rgba(139, 127, 199, 0.5);
+  transform: translateY(-2px);
 }
 
 .back-link {
-  color: #f5576c;
-  font-size: 14px;
+  color: #6B5FA3;
+  font-size: 16px;
+  font-family: 'DaHyun', 'Pretendard', sans-serif;
+  font-weight: 600;
   background: none;
+  border: none;
   padding: 8px 16px;
-  transition: color 0.3s;
+  cursor: pointer;
+  transition: all 0.3s;
 }
 
 .back-link:hover:not(:disabled) {
-  color: #f093fb;
+  color: #8B7FC7;
   text-decoration: underline;
 }
 
 .back-link:disabled {
   opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 관리자 로그인 페이지 폰트 통일 */
+.login-container.admin .login-title {
+  font-family: 'DaHyun', 'Pretendard', sans-serif;
+}
+
+.login-container.admin .login-subtitle {
+  font-family: 'DaHyun', 'Pretendard', sans-serif;
+}
+
+.login-container.admin label {
+  font-family: 'DaHyun', 'Pretendard', sans-serif;
+}
+
+.login-container.admin input {
+  font-family: 'DaHyun', 'Pretendard', sans-serif;
+}
+
+.login-container.admin .error-message {
+  font-family: 'DaHyun', 'Pretendard', sans-serif;
 }

@@ -187,6 +187,63 @@ function AdminRoleTab() {
     alert('배정 완료!')
   }
 
+  const cancelAssignments = async () => {
+    if (!selectedSessionId) {
+      alert('세션을 먼저 선택하세요')
+      return
+    }
+
+    if (!confirm('선택한 세션의 모든 배부를 취소하시겠습니까?')) return
+
+    const sessionId = parseInt(selectedSessionId)
+
+    // 1. 해당 세션의 배부 기록 조회 (학생 목록 확보)
+    const { data: assignments, error: fetchError } = await supabase
+      .from('role_assignments')
+      .select('student_id')
+      .eq('session_id', sessionId)
+
+    if (fetchError) {
+      console.error('배부 취소 - 배정 조회 오류:', fetchError)
+      alert('배정 정보를 불러오지 못했습니다.')
+      return
+    }
+
+    const studentIds = (assignments || [])
+      .map(a => a.student_id)
+      .filter(Boolean)
+
+    // 2. 학생 역할 비활성화
+    if (studentIds.length > 0) {
+      const { error: updateError } = await supabase
+        .from('student_roles')
+        .update({ is_active: false })
+        .in('student_id', studentIds)
+        .eq('is_active', true)
+
+      if (updateError) {
+        console.error('배부 취소 - 역할 비활성화 오류:', updateError)
+        alert('학생 역할을 초기화하지 못했습니다.')
+        return
+      }
+    }
+
+    // 3. 배부 기록 삭제
+    const { error: deleteError } = await supabase
+      .from('role_assignments')
+      .delete()
+      .eq('session_id', sessionId)
+
+    if (deleteError) {
+      console.error('배부 취소 - 기록 삭제 오류:', deleteError)
+      alert('배부 기록을 삭제하지 못했습니다.')
+      return
+    }
+
+    setAssignmentResults([])
+    alert('세션 배부가 취소되었습니다.')
+  }
+
   // === 세션 수정 ===
   const startEdit = (session) => {
     setEditingSession(session)
@@ -344,6 +401,7 @@ function AdminRoleTab() {
             />
 
             <button onClick={assignRoles} className="assign-btn">배정하기</button>
+            <button onClick={cancelAssignments} className="cancel-assign-btn">배부 취소</button>
 
             {assignmentResults.length > 0 && (
               <div className="assignment-results">

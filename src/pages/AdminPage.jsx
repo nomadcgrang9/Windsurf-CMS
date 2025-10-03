@@ -4,17 +4,20 @@ import AdminLearningGuideTab from '../modules/admin/AdminLearningGuideTab'
 import AdminPointsTab from '../modules/admin/AdminPointsTab'
 import AdminClassTab from '../modules/admin/AdminClassTab'
 import AdminRoleTab from '../modules/admin/AdminRoleTab'
+import AdminHelpTab from '../modules/admin/AdminHelpTab'
+import AdminHoverMessageTab from '../modules/admin/AdminHoverMessageTab'
 import AdminMessageTab from '../modules/admin/AdminMessageTab'
+import AdminRandomPickTab from '../modules/admin/AdminRandomPickTab'
 
 /**
  * 관리자 메인 페이지
  * - 로그인 후 접근 가능
- * - 5개 탭 구조 (학습안내, 포인트 관리, 학급 관리, 역할배정, 쪽지 관리)
+ * - 8개 탭 구조 (2줄 레이아웃)
  * - 탭 전환으로 기능 선택
  */
 function AdminPage() {
   const navigate = useNavigate()
-  const [activeTab, setActiveTab] = useState('learning') // learning, points, class, role, message
+  const [activeTab, setActiveTab] = useState('learning') // learning, points, class, role, help, hover, message, pick
 
   // 로그인 확인
   useEffect(() => {
@@ -81,11 +84,12 @@ function AdminPage() {
         </button>
       </div>
 
-      {/* 탭 버튼 */}
+      {/* 탭 버튼 (2줄 레이아웃) */}
       <div style={{
         background: '#F5F5F5',
         padding: '0 40px',
         display: 'flex',
+        flexWrap: 'wrap',
         gap: '8px',
         borderBottom: '1px solid #E0E0E0'
       }}>
@@ -154,6 +158,38 @@ function AdminPage() {
           역할배정
         </button>
         <button
+          onClick={() => setActiveTab('help')}
+          style={{
+            padding: '16px 32px',
+            fontSize: '16px',
+            fontWeight: 600,
+            color: activeTab === 'help' ? '#333' : '#999',
+            background: activeTab === 'help' ? '#FFFFFF' : 'transparent',
+            border: 'none',
+            borderBottom: activeTab === 'help' ? '3px solid #667eea' : '3px solid transparent',
+            cursor: 'pointer',
+            transition: 'all 0.2s'
+          }}
+        >
+          도움관리
+        </button>
+        <button
+          onClick={() => setActiveTab('hover')}
+          style={{
+            padding: '16px 32px',
+            fontSize: '16px',
+            fontWeight: 600,
+            color: activeTab === 'hover' ? '#333' : '#999',
+            background: activeTab === 'hover' ? '#FFFFFF' : 'transparent',
+            border: 'none',
+            borderBottom: activeTab === 'hover' ? '3px solid #667eea' : '3px solid transparent',
+            cursor: 'pointer',
+            transition: 'all 0.2s'
+          }}
+        >
+          말풍선 관리
+        </button>
+        <button
           onClick={() => setActiveTab('message')}
           style={{
             padding: '16px 32px',
@@ -168,6 +204,22 @@ function AdminPage() {
           }}
         >
           쪽지 관리
+        </button>
+        <button
+          onClick={() => setActiveTab('pick')}
+          style={{
+            padding: '16px 32px',
+            fontSize: '16px',
+            fontWeight: 600,
+            color: activeTab === 'pick' ? '#333' : '#999',
+            background: activeTab === 'pick' ? '#FFFFFF' : 'transparent',
+            border: 'none',
+            borderBottom: activeTab === 'pick' ? '3px solid #667eea' : '3px solid transparent',
+            cursor: 'pointer',
+            transition: 'all 0.2s'
+          }}
+        >
+          뽑기 관리
         </button>
       </div>
 
@@ -185,7 +237,13 @@ function AdminPage() {
         
         {activeTab === 'role' && <AdminRoleTab />}
         
+        {activeTab === 'help' && <AdminHelpTab />}
+        
+        {activeTab === 'hover' && <AdminHoverMessageTab />}
+        
         {activeTab === 'message' && <AdminMessageTab />}
+        
+        {activeTab === 'pick' && <AdminRandomPickTab />}
       </div>
     </div>
   )

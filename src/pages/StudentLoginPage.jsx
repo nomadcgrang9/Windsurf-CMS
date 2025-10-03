@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { loginStudent } from '../services/authService'
+import { getHoverMessage } from '../services/hoverMessageService'
 import '../styles/student.css'
 
 /**
@@ -15,6 +16,34 @@ function StudentLoginPage() {
   const [name, setName] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [hoverContent, setHoverContent] = useState({
+    message: '창건샘 말씀하시길,\n나는 못하지만 친구는 할 수 있다!',
+    imageUrl: '/characters/nini-rogin.png'
+  })
+
+  useEffect(() => {
+    let mounted = true
+
+    const loadHoverContent = async () => {
+      try {
+        const data = await getHoverMessage()
+        if (!mounted || !data) return
+
+        setHoverContent({
+          message: data.message || '창건샘 말씀하시길,\n나는 못하지만 친구는 할 수 있다!',
+          imageUrl: data.imageUrl || '/characters/nini-rogin.png'
+        })
+      } catch (hoverError) {
+        console.error('말풍선 데이터 로드 실패:', hoverError)
+      }
+    }
+
+    loadHoverContent()
+
+    return () => {
+      mounted = false
+    }
+  }, [])
 
   /**
    * 로그인 처리
@@ -101,33 +130,20 @@ function StudentLoginPage() {
             {loading ? '로그인 중...' : '로그인'}
           </button>
         </form>
-
-        <button
-          type="button"
-          className="admin-link"
-          onClick={() => {
-            const password = prompt('관리자 비밀번호를 입력하세요:')
-            if (password === 'teacher123') {
-              localStorage.setItem('isAdmin', 'true')
-              navigate('/admin')
-            } else if (password !== null) {
-              alert('비밀번호가 올바르지 않습니다.')
-            }
-          }}
-          disabled={loading}
-        >
-          관리자 로그인
-        </button>
       </div>
 
       {/* 하단 캐릭터 영역 */}
       <div className="character-section">
         <div className="character">
           <div className="character-speech-bubble">
-            창건샘 말씀하시길,<br />
-            나는 못하지만 친구는 할 수 있다!
+            {hoverContent.message.split('\n').map((line, i) => (
+              <div key={i}>
+                {line}
+                {i < hoverContent.message.split('\n').length - 1 && <br />}
+              </div>
+            ))}
           </div>
-          <img src="/characters/nini-rogin.png" alt="학생들" />
+          <img src={hoverContent.imageUrl} alt="학생들" />
         </div>
       </div>
     </div>

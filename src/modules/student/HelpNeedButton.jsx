@@ -48,8 +48,17 @@ function HelpNeedButton() {
       )
       .subscribe()
 
+    // Visibility API: 크롬북 열 때 자동 체크
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        checkMyStatus() // 페이지가 다시 보일 때 만료 체크
+      }
+    }
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+
     return () => {
       supabase.removeChannel(channel)
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
     }
   }, [])
 

@@ -1,0 +1,105 @@
+.hover-tab-container {
+  padding: 20px;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.hover-tab-container h2 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.hover-tab-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: #FFFFFF;
+  border: 1px solid #E0E0E0;
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.hover-tab-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #555;
+}
+
+.hover-tab-textarea {
+  width: 100%;
+  min-height: 140px;
+  padding: 12px;
+  border: 1px solid #D5D5D5;
+  border-radius: 8px;
+  resize: vertical;
+  font-size: 15px;
+  line-height: 1.6;
+  font-family: 'Pretendard', sans-serif;
+}
+
+.hover-tab-textarea:focus {
+  border-color: #667EEA;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+  outline: none;
+}
+
+.hover-tab-file {
+  padding: 8px 0;
+}
+
+.hover-tab-preview {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hover-tab-preview img {
+  width: 200px;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.preview-title {
+  font-size: 13px;
+  color: #666;
+}
+
+.hover-tab-submit {
+  margin-top: 4px;
+  padding: 12px 16px;
+  background: linear-gradient(120deg, #667EEA, #764BA2);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hover-tab-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(102, 126, 234, 0.25);
+}
+
+.hover-tab-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.hover-tab-status {
+  margin-top: 16px;
+  font-size: 14px;
+  color: #555;
+}
+
+.hover-tab-loading {
+  padding: 40px;
+  text-align: center;
+  color: #666;
+}
