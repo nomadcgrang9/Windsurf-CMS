@@ -1,0 +1,359 @@
+/* 학생 로그인 테스트 페이지 스타일 */
+
+/* 한글 웹폰트 추가 */
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+
+/* 온글잎 박다현체 - 로컬 폰트 */
+@font-face {
+  font-family: 'DaHyun';
+  src: url('/fonts/dahyun.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* 전체 컨테이너 */
+.test-login-container {
+  min-height: 100vh;
+  background: #B8D4D9;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 0;
+  margin: 0;
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  position: relative;
+}
+
+/* 메인 콘텐츠 영역 */
+.test-login-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  max-width: 420px;
+  padding: 80px 20px 40px;
+  animation: fadeInDown 0.6s ease-out;
+}
+
+/* 타이틀 */
+.test-login-title {
+  font-family: 'DaHyun', 'Pretendard', sans-serif;
+  font-size: 80px;
+  font-weight: 900;
+  color: #FFFFFF;
+  margin: 0 0 40px;
+  letter-spacing: -1px;
+  text-align: center;
+  animation: fadeInDown 0.3s ease-out;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* 로그인 폼 */
+.test-login-form {
+  width: 100%;
+  animation: fadeInUp 0.7s ease-out;
+}
+
+/* 폼 그룹 */
+.test-form-group {
+  margin-bottom: 10px;
+}
+
+.test-form-group label {
+  display: none;
+}
+
+.test-form-group input {
+  width: 100%;
+  height: 45px;
+  padding: 0 18px;
+  background: rgba(255, 255, 255, 0.8);
+  border: none;
+  border-radius: 10px;
+  font-family: 'DaHyun', 'Pretendard', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333333;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.test-form-group input:focus {
+  outline: none;
+  background: #FFFFFF;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+.test-form-group input::placeholder {
+  color: #B0B0B0;
+  font-weight: 400;
+}
+
+.test-form-group input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* 에러 메시지 */
+.test-error-message {
+  background: rgba(255, 138, 138, 0.15);
+  color: #FFFFFF;
+  padding: 12px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  margin: 20px 0;
+  border-left: 3px solid #FF8A8A;
+}
+
+/* 로그인 버튼 */
+.test-login-button {
+  width: 100%;
+  height: 50px;
+  background: rgba(255, 255, 255, 0.95);
+  color: #7BA8B0;
+  border: none;
+  border-radius: 12px;
+  font-family: 'DaHyun', 'Pretendard', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0;
+  cursor: pointer;
+  margin-top: 20px;
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.test-login-button:hover:not(:disabled) {
+  background: #FFFFFF;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.12);
+}
+
+.test-login-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.test-login-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* 관리자 로그인 링크 */
+.test-admin-link {
+  margin-top: 20px;
+  font-family: 'DaHyun', 'Pretendard', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.65);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.test-admin-link:hover:not(:disabled) {
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: underline;
+}
+
+.test-admin-link:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 하단 캐릭터 섹션 */
+.test-character-section {
+  position: fixed;
+  bottom: 60px;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  animation: fadeInUp 1s ease-out;
+}
+
+/* 캐릭터 컨테이너 */
+.test-characters {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 30px;
+}
+
+/* 개별 캐릭터 */
+.test-character {
+  width: 80px;
+  height: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.test-character img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.15));
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 말풍선 */
+.character-speech-bubble {
+  position: absolute;
+  top: -50px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #FFFFFF;
+  color: #333333;
+  padding: 8px 14px;
+  border-radius: 12px;
+  font-family: 'DaHyun', 'Pretendard', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 말풍선 꼬리 제거됨 */
+
+.test-character:hover {
+  transform: translateY(-10px) scale(1.1);
+}
+
+.test-character:hover img {
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.2));
+}
+
+.test-character:hover .character-speech-bubble {
+  opacity: 1;
+  top: -60px;
+}
+
+/* 애니메이션 */
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .test-login-title {
+    font-size: 64px;
+    margin-bottom: 60px;
+  }
+
+  .test-login-content {
+    max-width: 90%;
+    padding: 100px 20px 40px;
+  }
+
+  .test-character-block {
+    min-width: 380px;
+  }
+
+  .mac-header {
+    padding: 12px 14px;
+  }
+
+  .character-bar {
+    min-height: 80px;
+  }
+
+  .test-characters {
+    margin-bottom: -30px;
+  }
+
+  .test-character {
+    width: 60px;
+    height: 60px;
+    top: -30px;
+  }
+
+  .test-character:hover {
+    top: -35px;
+  }
+
+  .test-characters {
+    gap: 18px;
+  }
+
+  .mac-btn {
+    width: 10px;
+    height: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .test-login-title {
+    font-size: 56px;
+    margin-bottom: 50px;
+  }
+
+  .test-login-content {
+    padding: 80px 20px 40px;
+  }
+
+  .test-character-block {
+    min-width: 320px;
+  }
+
+  .mac-header {
+    padding: 10px 12px;
+  }
+
+  .character-bar {
+    min-height: 70px;
+  }
+
+  .test-characters {
+    margin-bottom: -25px;
+  }
+
+  .test-character {
+    width: 50px;
+    height: 50px;
+    top: -25px;
+  }
+
+  .test-character:hover {
+    top: -30px;
+  }
+
+  .test-characters {
+    gap: 16px;
+  }
+
+  .mac-btn {
+    width: 9px;
+    height: 9px;
+  }
+}

@@ -1,0 +1,290 @@
+.admin-role-tab {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.admin-role-tab h2 {
+  margin-bottom: 24px;
+  color: #333;
+}
+
+/* 섹션 */
+.role-section {
+  margin-bottom: 16px;
+  border: 1px solid #E0E0E0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.section-toggle {
+  width: 100%;
+  padding: 16px;
+  background: #F5F5F5;
+  border: none;
+  text-align: left;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.section-toggle:hover {
+  background: #E8E8E8;
+}
+
+.section-content {
+  padding: 20px;
+  background: white;
+}
+
+/* 입력 필드 */
+.session-name-input,
+.class-input {
+  width: 100%;
+  padding: 12px;
+  font-size: 14px;
+  border: 2px solid #E0E0E0;
+  border-radius: 6px;
+  margin-bottom: 16px;
+}
+
+.session-name-input:focus,
+.class-input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+/* 역할 목록 */
+.roles-list {
+  margin: 16px 0;
+}
+
+.roles-list label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.role-item {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.role-item input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 2px solid #E0E0E0;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.role-item input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.role-item button {
+  padding: 8px 16px;
+  background: #ff4444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.role-item button:hover {
+  background: #cc0000;
+}
+
+.add-role-btn {
+  padding: 8px 16px;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.add-role-btn:hover {
+  background: #45a049;
+}
+
+/* 버튼 */
+.save-btn,
+.assign-btn {
+  padding: 12px 24px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 16px;
+}
+
+.save-btn:hover,
+.assign-btn:hover {
+  background: #5568d3;
+}
+
+/* 세션 선택 */
+.session-select {
+  width: 100%;
+  padding: 12px;
+  font-size: 14px;
+  border: 2px solid #E0E0E0;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  cursor: pointer;
+}
+
+.session-select:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+/* 배정 결과 */
+.assignment-results {
+  margin-top: 24px;
+  padding: 16px;
+  background: #F9F9F9;
+  border-radius: 8px;
+}
+
+.assignment-results h4 {
+  margin-bottom: 16px;
+  color: #333;
+}
+
+.result-class {
+  margin-bottom: 16px;
+  padding: 12px;
+  background: white;
+  border-radius: 6px;
+}
+
+.result-class strong {
+  display: block;
+  margin-bottom: 8px;
+  color: #667eea;
+}
+
+.result-class ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.result-class li {
+  padding: 4px 0;
+  font-size: 14px;
+  color: #555;
+}
+
+.result-class .error {
+  color: #ff4444;
+  font-size: 14px;
+}
+
+/* 세션 목록 */
+.sessions-list {
+  margin-bottom: 24px;
+}
+
+.session-card {
+  padding: 16px;
+  background: #F9F9F9;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.session-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.session-header strong {
+  font-size: 16px;
+  color: #333;
+}
+
+.session-header div {
+  display: flex;
+  gap: 8px;
+}
+
+.edit-btn-small,
+.delete-btn-small {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.edit-btn-small {
+  background: #667eea;
+  color: white;
+}
+
+.edit-btn-small:hover {
+  background: #5568d3;
+}
+
+.delete-btn-small {
+  background: #ff4444;
+  color: white;
+}
+
+.delete-btn-small:hover {
+  background: #cc0000;
+}
+
+.session-roles {
+  font-size: 14px;
+  color: #666;
+}
+
+/* 수정 폼 */
+.edit-form {
+  margin-top: 24px;
+  padding: 20px;
+  background: #F0F4FF;
+  border-radius: 8px;
+}
+
+.edit-form h4 {
+  margin-bottom: 16px;
+  color: #333;
+}
+
+.edit-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.cancel-btn {
+  padding: 12px 24px;
+  background: #999;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.cancel-btn:hover {
+  background: #777;
+}

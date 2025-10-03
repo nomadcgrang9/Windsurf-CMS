@@ -1,0 +1,210 @@
+/* 타이머 모듈 플립카드 스타일 (CSS Module - 전역 오염 방지) */
+
+/* 전체 카드가 회전하는 컨테이너 */
+.flipContainer {
+  perspective: 1000px;
+  transform-style: preserve-3d;
+  transition: transform 0.6s;
+  position: relative;
+}
+
+/* 플립된 상태 */
+.flipContainer.flipped {
+  transform: rotateY(180deg);
+  z-index: 10;
+}
+
+/* 플립 시 호버 효과 제거 */
+.flipContainer.flipped:hover {
+  border-color: #E0E0E0;
+  background: #FFFFFF;
+  transform: rotateY(180deg);  /* 회전 유지하면서 scale 제거 */
+}
+
+/* 앞면과 뒷면 공통 스타일 */
+.cardFront,
+.cardBack {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 앞면 */
+.cardFront {
+  gap: 8px;
+}
+
+.cardBack {
+  background: white;
+  border: none;
+  border-radius: 12px;
+  transform: rotateY(180deg);
+  padding: 16px;
+}
+
+.backContent {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  padding: 4px;
+}
+
+.title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0;
+}
+
+.input {
+  width: 100%;
+  padding: 6px;
+  font-size: 14px;
+  border: 2px solid #E0E0E0;
+  border-radius: 6px;
+  text-align: center;
+  outline: none;
+  background: white;
+}
+
+.input:focus {
+  border-color: #667eea;
+}
+
+.button {
+  flex: 1;
+  padding: 6px 4px;
+  font-size: 10px;
+  font-weight: 600;
+  color: white;
+  background: #B8D4D9;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.button:hover {
+  background: #A0C4CC;
+}
+
+.button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.buttonSecondary {
+  flex: 1;
+  padding: 6px 4px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #B8D4D9;
+  background: white;
+  border: 2px solid #B8D4D9;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.buttonSecondary:hover {
+  background: #F0F8FF;
+  border-color: #A0C4CC;
+}
+
+.buttonGroup {
+  width: 100%;
+  display: flex;
+  gap: 6px;
+}
+
+.display {
+  font-size: 20px;
+  font-weight: 700;
+  color: #667eea;
+  margin: 4px 0;
+}
+
+/* 알람 모달 - 미니멀 디자인 */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modalContent {
+  background: white;
+  padding: 32px 28px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  text-align: center;
+  min-width: 280px;
+  max-width: 340px;
+  animation: slideUp 0.2s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modalTitle {
+  font-family: 'Pretendard', sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 12px;
+}
+
+.modalMessage {
+  font-family: 'Pretendard', sans-serif;
+  font-size: 15px;
+  color: #666;
+  margin-bottom: 24px;
+  line-height: 1.4;
+}
+
+.modalButton {
+  width: 100%;
+  padding: 12px;
+  font-family: 'Pretendard', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: white;
+  background: #B8D4D9;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.modalButton:hover {
+  background: #A0C4CC;
+}

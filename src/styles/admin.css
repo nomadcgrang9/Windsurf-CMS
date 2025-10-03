@@ -1,0 +1,30 @@
+/* 관리자 페이지 스타일 */
+
+.login-container.admin {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.login-button.admin {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.login-button.admin:hover:not(:disabled) {
+  box-shadow: 0 4px 12px rgba(240, 147, 251, 0.4);
+}
+
+.back-link {
+  color: #f5576c;
+  font-size: 14px;
+  background: none;
+  padding: 8px 16px;
+  transition: color 0.3s;
+}
+
+.back-link:hover:not(:disabled) {
+  color: #f093fb;
+  text-decoration: underline;
+}
+
+.back-link:disabled {
+  opacity: 0.5;
+}

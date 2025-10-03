@@ -1,0 +1,257 @@
+/* 학생 메인 페이지 스타일 */
+
+/* 한글 웹폰트 (로그인 페이지와 동일) */
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+
+/* 박다현체 (로그인 페이지와 동일) */
+@font-face {
+  font-family: 'DaHyun';
+  src: url('/fonts/dahyun.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* 메인 컨테이너 - 5열 그리드 */
+.student-main-container {
+  display: grid;
+  grid-template-columns: 12% 25% 21% 21% 21%;
+  grid-template-rows: 80px 2.8fr 1fr;
+  height: 100vh;
+  background: #FFFFFF;
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  gap: 0;
+  overflow: hidden;
+}
+
+/* 헤더 - 전체 너비 */
+.header-module {
+  grid-column: 1 / 6;
+  grid-row: 1;
+  background: #B8D4D9;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 40px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  z-index: 100;
+}
+
+.header-title {
+  flex: 0 0 auto;
+}
+
+.header-student-info {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-left: auto;
+}
+
+.header-logout {
+  flex: 0 0 auto;
+}
+
+/* Column 1 - 좌측 도구 (12%) */
+.tools-column {
+  grid-column: 1;
+  grid-row: 2 / 4;
+  display: grid;
+  grid-template-rows: repeat(4, 1fr);
+  gap: 10px;
+  padding: 10px;
+  background: #F8F9FA;
+}
+
+/* Column 2 - 학습안내/포인트 (25%) */
+.info-column {
+  grid-column: 2;
+  grid-row: 2 / 4;
+  display: grid;
+  grid-template-rows: 1.5fr 1fr;
+  gap: 10px;
+  padding: 10px;
+  background: #F8F9FA;
+}
+
+/* 도움알림 - Column 3-5 병합 (63%, 상단 75%) */
+.help-notification-module {
+  grid-column: 3 / 6;
+  grid-row: 2;
+  padding: 15px 16px;
+  background: #FFFFFF;
+  border: 1px solid #E0E0E0;
+  border-radius: 12px;
+  margin: 10px;
+  overflow-y: auto;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+/* Column 3 - 도와줄래? (21%, 하단 25%) */
+.help-need-button {
+  grid-column: 3;
+  grid-row: 3;
+  padding: 5px 10px 10px 10px;
+}
+
+/* Column 4 - 도와줄게! (21%, 하단 25%) */
+.help-give-button {
+  grid-column: 4;
+  grid-row: 3;
+  padding: 5px 10px 10px 10px;
+}
+
+/* Column 5 - 고마워 (21%, 하단 25%) */
+.help-thanks-button {
+  grid-column: 5;
+  grid-row: 3;
+  padding: 5px 10px 10px 10px;
+}
+
+/* 공통 카드 스타일 */
+.module-card {
+  background: #FFFFFF;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;  /* center → flex-start (왼쪽 정렬) */
+  transition: all 0.3s ease;
+  cursor: default;
+  border: 1px solid #E0E0E0;
+}
+
+.module-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+/* 도구 버튼 공통 스타일 */
+.tool-button {
+  background: #FFFFFF;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: 2px solid #E0E0E0;
+}
+
+.tool-button:hover {
+  background: #F0F8FF;
+  border-color: #B8D4D9;
+  transform: scale(1.02);
+}
+
+.tool-button-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tool-icon {
+  width: 75px;
+  height: 75px;
+  object-fit: contain;
+  transition: all 0.3s ease;
+}
+
+.tool-button:hover .tool-icon {
+  transform: scale(1.1);
+}
+
+.tool-button-text {
+  font-family: 'DaHyun', 'Pretendard', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333333;
+}
+
+/* 도움 시스템 버튼 공통 스타일 */
+.help-system-button {
+  width: 100%;
+  height: 100%;
+  min-height: 120px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-family: 'DaHyun', 'Pretendard', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  background: #FFFFFF;
+  color: #333333;
+}
+
+.help-system-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.help-system-button:active {
+  transform: translateY(0);
+}
+
+/* 도움 시스템 아이콘 이미지 */
+.help-icon {
+  width: 110px;
+  height: 110px;
+  object-fit: contain;
+  transition: all 0.3s ease;
+  margin-bottom: -20px;
+}
+
+.help-system-button:hover .help-icon {
+  transform: scale(1.1);
+}
+
+/* 도와줄래? 버튼 */
+.help-need-button .help-system-button {
+  border: 2px solid #FFB380;
+}
+
+.help-need-button .help-system-button:hover {
+  background: #FFF5F0;
+  border-color: #FFA060;
+}
+
+/* 도와줄게! 버튼 */
+.help-give-button .help-system-button {
+  border: 2px solid #A8D8F0;
+}
+
+.help-give-button .help-system-button:hover {
+  background: #F0F8FF;
+  border-color: #88C8E0;
+}
+
+/* 고마워 버튼 */
+.help-thanks-button .help-system-button {
+  border: 2px solid #B8D4D9;
+}
+
+.help-thanks-button .help-system-button:hover {
+  background: #F0F8FA;
+  border-color: #A0C4CC;
+}
+
+/* 반응형 (13인치 크롬북) */
+@media (max-width: 1366px) {
+  .student-main-container {
+    grid-template-columns: 12% 25% 21% 21% 21%;
+  }
+  
+  .help-system-button {
+    font-size: 32px;
+  }
+}
