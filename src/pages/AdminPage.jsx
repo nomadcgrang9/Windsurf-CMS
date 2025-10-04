@@ -5,6 +5,7 @@ import AdminPointsTab from '../modules/admin/AdminPointsTab'
 import AdminClassTab from '../modules/admin/AdminClassTab'
 import AdminRoleTab from '../modules/admin/AdminRoleTab'
 import AdminHelpTab from '../modules/admin/AdminHelpTab'
+import AdminHelpRecordsTab from '../modules/admin/AdminHelpRecordsTab'
 import AdminHoverMessageTab from '../modules/admin/AdminHoverMessageTab'
 import AdminMessageTab from '../modules/admin/AdminMessageTab'
 import AdminRandomPickTab from '../modules/admin/AdminRandomPickTab'
@@ -12,12 +13,12 @@ import AdminRandomPickTab from '../modules/admin/AdminRandomPickTab'
 /**
  * 관리자 메인 페이지
  * - 로그인 후 접근 가능
- * - 8개 탭 구조 (2줄 레이아웃)
+ * - 9개 탭 구조 (2줄 레이아웃)
  * - 탭 전환으로 기능 선택
  */
 function AdminPage() {
   const navigate = useNavigate()
-  const [activeTab, setActiveTab] = useState('learning') // learning, points, class, role, help, hover, message, pick
+  const [activeTab, setActiveTab] = useState('learning') // learning, points, class, role, help, helpRecords, hover, message, pick
 
   // 로그인 확인
   useEffect(() => {
@@ -174,6 +175,22 @@ function AdminPage() {
           도움관리
         </button>
         <button
+          onClick={() => setActiveTab('helpRecords')}
+          style={{
+            padding: '16px 32px',
+            fontSize: '16px',
+            fontWeight: 600,
+            color: activeTab === 'helpRecords' ? '#333' : '#999',
+            background: activeTab === 'helpRecords' ? '#FFFFFF' : 'transparent',
+            border: 'none',
+            borderBottom: activeTab === 'helpRecords' ? '3px solid #667eea' : '3px solid transparent',
+            cursor: 'pointer',
+            transition: 'all 0.2s'
+          }}
+        >
+          도움내용
+        </button>
+        <button
           onClick={() => setActiveTab('hover')}
           style={{
             padding: '16px 32px',
@@ -238,6 +255,8 @@ function AdminPage() {
         {activeTab === 'role' && <AdminRoleTab />}
         
         {activeTab === 'help' && <AdminHelpTab />}
+        
+        {activeTab === 'helpRecords' && <AdminHelpRecordsTab />}
         
         {activeTab === 'hover' && <AdminHoverMessageTab />}
         

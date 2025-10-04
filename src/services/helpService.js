@@ -121,18 +121,20 @@ export const cancelHelpRequest = async (studentId) => {
  * 도움 완료 (고마워)
  * @param {string} requestingStudentId - 도움 받은 학생 ID
  * @param {string} helpingStudentId - 도와준 학생 ID
+ * @param {string} helpDescription - 도와준 내용 (학생이 작성)
  * @returns {Promise<Object>} 결과
  */
-export const completeHelp = async (requestingStudentId, helpingStudentId) => {
+export const completeHelp = async (requestingStudentId, helpingStudentId, helpDescription = '') => {
   try {
-    // 1. 포인트 거래 기록
+    // 1. 포인트 거래 기록 (도와준 내용 포함)
     const { error: transactionError } = await supabase
       .from('point_transactions')
       .insert([
         {
           helper_student_id: helpingStudentId,
           helped_student_id: requestingStudentId,
-          points: 1
+          points: 1,
+          help_description: helpDescription || null
           // help_type 제거 (CHECK 제약 조건 문제)
         }
       ])

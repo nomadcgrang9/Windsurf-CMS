@@ -619,10 +619,310 @@ Error: 이미 활성화된 요청이 있습니다.
 
 ---
 
+## [2025-10-04] Gemini API 생기부 변환 기능 - 다단계 버그 수정
+
+**발생 위치**: 
+- `src/services/geminiService.js` - `convertToRecordFormat()`
+- `src/modules/admin/AdminHelpRecordsTab.jsx`
+- `database/add_help_description_columns.sql`
+
+**증상**: 
+1. **AI 변환 결과가 너무 장황함**: 
+   - 원본: "퀴즈풀때 under 쓸 줄 몰랐는데 r단어 알려줬어요"
+   - 초기 변환: "퀴즈를 풀 때 'under'라는 영어 단어의 철자를 몰라 어려움을 겪는 친구에게 'r'로 시작하는 단어를 알려주며 도움을 주었음. 이를 통해 친구는 단어의 철자를 이해하고 퀴즈를 완성할 수 있었음."
+   - 문제: 50자를 훨씬 초과하는 장문의 설명
+
+2. **승인된 항목 수정 불가**: 
+   - AI 변환 후 승인하면 "미승인" 버튼이 없어서 잘못된 변환을 수정할 수 없음
+   - 삭제하고 다시 변환하는 기능 부재
+
+**원인**: 
+1. **프롬프트 문제**:
+   - 초기 프롬프트가 "생활기록부 형식으로 변환"만 명시
+   - 글자 수 제한이 없어 AI가 장황하게 작성
+   - 서술형 종결어미 지시 부족
+
+2. **UI 로직 문제**:
+   - `AdminHelpRecordsTab.jsx`의 버튼 로직이 불완전
+   - AI 변환 후 승인되면 버튼이 아예 표시되지 않음 (line 333-351)
+   - 승인 취소 함수(`handleUnapprove`) 부재
+
+**해결방법** (적용):
+
+### 1단계: 프롬프트 개선 (geminiService.js)
+```javascript
+// 변경 전
+const prompt = `다음 내용을 초등학교 생활기록부 형식으로 변환해주세요...`
+
+// 변경 후
+const prompt = `다음 내용을 초등학교 생활기록부 형식으로 변환해주세요.
+
+중요:
+- 반드시 한 문장으로만 작성하세요.
+- 50자 이내로 작성하세요.
+- 설명 없이 변환된 문장만 출력하세요.
+- 서술형 종결어미(~함, ~였음, ~도왔음)를 사용하세요.
+
+원본 내용:
+${helpDescription}`
+```
+
+### 2단계: 승인 취소 함수 추가 (AdminHelpRecordsTab.jsx)
+```javascript
+// 승인 취소
+const handleUnapprove = async (transactionId) => {
+  if (!window.confirm('승인을 취소하고 AI 변환 내용을 삭제하시겠습니까?\n다시 변환할 수 있습니다.')) return
+
+  try {
+    const { error } = await supabase
+      .from('point_transactions')
+      .update({
+        is_approved: false,
+        approved_at: null,
+        ai_converted_description: null
+      })
+      .eq('transaction_id', transactionId)
+
+    if (error) throw error
+
+    setMessage('✅ 승인이 취소되었습니다. 다시 변환할 수 있습니다.')
+    fetchRecords()
+  } catch (error) {
+    console.error('승인 취소 오류:', error)
+    setMessage('❌ 승인 취소 중 오류가 발생했습니다.')
+  }
+}
+```
+
+### 3단계: 버튼 로직 재구성 (AdminHelpRecordsTab.jsx, line 355-432)
+```javascript
+// 케이스 1: AI 변환 전 - 변환 버튼만
+{!record.ai_converted_description && (
+  <button onClick={() => handleConvert(record.transaction_id)}>
+    생기부 변환
+  </button>
+)}
+
+// 케이스 2: AI 변환 후 + 미승인 - 승인/다시변환 버튼
+{record.ai_converted_description && !record.is_approved && (
+  <>
+    <button onClick={() => handleApprove(record.transaction_id)}>승인</button>
+    <button onClick={() => handleReject(record.transaction_id)}>다시 변환</button>
+  </>
+)}
+
+// 케이스 3: AI 변환 후 + 승인됨 - 미승인 버튼
+{record.ai_converted_description && record.is_approved && (
+  <button onClick={() => handleUnapprove(record.transaction_id)}>미승인</button>
+)}
+```
+
+**수정 파일**:
+- `src/services/geminiService.js` (line 35-48: 프롬프트 수정)
+- `src/modules/admin/AdminHelpRecordsTab.jsx` (line 203-225: 승인 취소 함수 추가, line 355-432: 버튼 로직 재구성)
+
+**테스트 결과**:
+- ✅ AI 변환 결과가 간결해짐 (50자 이내 한 문장)
+- ✅ 서술형 종결어미 사용 ("~도왔음", "~설명함")
+- ✅ 승인 후 "미승인" 버튼으로 취소 가능
+- ✅ 미승인 시 AI 변환 내용 삭제되고 재변환 가능
+- ✅ 3가지 케이스별 버튼 정상 작동
+
+**실제 변환 예시**:
+- **원본**: "퀴즈풀때 under 쓸 줄 몰랐는데 r단어 알려줬어요"
+- **최종 변환**: "퀴즈 중 철자 어려움을 겪는 친구를 적극적으로 도왔음."
+- **토큰 사용**: 프롬프트 122 + 응답 18 + Thinking 1,012 = 총 1,152 토큰
+
+**우선순위**: 🔴 Critical (핵심 기능 품질 문제)
+
+**상태**: ✅ 해결 완료 (2025-10-04 20:20)
+
+**교훈**:
+- AI 프롬프트는 **구체적인 제약 조건**을 명시해야 함 (글자 수, 문장 수, 형식)
+- UI 로직은 **모든 상태 케이스**를 고려해야 함 (변환 전/후, 승인/미승인)
+- 승인 후에도 **수정 가능한 경로**를 제공해야 사용자 경험 향상
+
+---
+
+---
+
+## 🐛 버그 #9: Gemini API 통합 - 모델 호환성 및 Thinking 토큰 문제
+
+**발견일**: 2025-10-04  
+**보고자**: 시스템 통합 테스트
+
+### 📋 버그 설명
+
+Gemini API를 사용하여 학생의 도움 내용을 생활기록부 형식으로 자동 변환하는 기능 구현 중, 다음과 같은 문제들이 연속적으로 발생했습니다:
+
+1. **API 키 유효성 문제** (`400 Bad Request`)
+2. **모델 호환성 문제** (`404 Not Found`)
+3. **Thinking 토큰 과다 소모 문제** (응답 비어있음)
+
+### 🔍 재현 방법
+
+1. 관리자 페이지 → 도움내용 관리 탭 이동
+2. 학급 조회 (예: "3-1")
+3. 도움 기록에서 "생기부 변환" 버튼 클릭
+4. Gemini API 호출 시 다양한 에러 발생
+
+### ❌ 예상 동작
+
+- Gemini API가 학생의 원본 텍스트를 받아 생활기록부 형식으로 변환
+- 변환된 텍스트가 DB에 저장되고 관리자 화면에 표시
+- 관리자가 승인/재시도 가능
+
+### 🐞 실제 동작
+
+**문제 1: API 키 유효성 에러**
+```
+[400 Bad Request] API key not valid. Please pass a valid API key.
+```
+- **원인**: 초기 API 키가 결제 계정이 연결되지 않은 프로젝트에서 생성됨
+- **해결**: 새 프로젝트에서 API 키 재발급 (`AIzaSyC-8BIi6pEePr3RTdGk7jFqRkFZvDYqfy0`)
+
+**문제 2: 모델 호환성 에러**
+```
+[404 Not Found] models/gemini-1.5-pro is not found for API version v1beta
+[404 Not Found] models/gemini-1.5-flash-latest is not found for API version v1beta
+[404 Not Found] models/gemini-pro is not found for API version v1
+```
+- **원인**: 시도한 모델들이 현재 API 키/프로젝트에서 사용 불가능
+- **확인**: `curl` 명령으로 사용 가능한 모델 확인 → `gemini-2.5-flash`만 사용 가능
+
+**문제 3: Thinking 토큰 과다 소모**
+```json
+{
+  "finishReason": "MAX_TOKENS",
+  "usageMetadata": {
+    "thoughtsTokenCount": 999,
+    "totalTokenCount": 1030
+  },
+  "content": { "role": "model" }  // parts 비어있음
+}
+```
+- **원인**: `gemini-2.5-flash` 모델이 답변 생성 전 "생각 과정(thoughts)"에 할당된 토큰을 모두 소모
+- **시도 1**: `systemInstruction`으로 생각 과정 제어 → `v1` API에서 미지원 (`400 Bad Request`)
+- **시도 2**: 프롬프트 단순화 → 효과 없음 (여전히 999 토큰 소모)
+- **최종 해결**: `maxOutputTokens`를 10,000으로 대폭 증가
+
+### ✅ 해결 방법
+
+#### 1단계: API 설정 최적화
+```javascript
+// geminiService.js
+const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY
+const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent'
+```
+
+#### 2단계: 프롬프트 구체화 및 토큰 증가
+```javascript
+const requestBody = {
+  contents: [{
+    parts: [{ text: prompt }]
+  }],
+  generationConfig: {
+    temperature: 0.7,
+    topK: 40,
+    topP: 0.95,
+    maxOutputTokens: 10000  // Thinking 토큰 허용
+  }
+}
+```
+
+#### 3단계: 프롬프트 개선
+```javascript
+const prompt = `다음은 초등학생이 친구를 도와준 내용입니다. 이것을 초등학교 생활기록부에 기록할 한 문장으로 변환하세요.
+
+규칙:
+- 반드시 한 문장으로만 작성
+- 50자 이내로 간결하게
+- "~함", "~하였음" 등 서술형 종결어미 사용
+- 설명이나 부연 없이 변환된 문장만 출력
+- 학생의 긍정적인 행동 강조
+
+원본: ${helpDescription}
+
+변환:`
+```
+
+#### 4단계: UI 개선 - 재시도 버튼 추가
+```javascript
+// AdminHelpRecordsTab.jsx
+const handleReject = async (transactionId) => {
+  if (!window.confirm('AI 변환 내용을 삭제하고 다시 시도할 수 있도록 초기화하시겠습니까?')) return;
+  
+  const { error } = await supabase
+    .from('point_transactions')
+    .update({ ai_converted_description: null })
+    .eq('transaction_id', transactionId);
+    
+  if (error) throw error;
+  setMessage('✅ 변환 내용이 초기화되었습니다. 다시 시도해주세요.');
+  fetchRecords();
+};
+```
+
+### 📊 최종 결과
+
+**성공적인 변환 예시**:
+- **원본**: "퀴즈풀때 under 쓸 줄 몰랐는데 r단어 알려줬어요"
+- **변환**: "퀴즈 중 철자 어려움을 겪는 친구를 적극적으로 도왔음."
+- **토큰 사용**: 프롬프트 122 + 응답 18 + Thinking 1,012 = 총 1,152 토큰
+- **응답 상태**: `finishReason: "STOP"` (정상 완료)
+
+**UI 동작 확인**:
+- ✅ "생기부 변환" 버튼 → AI 변환 실행
+- ✅ 변환 완료 후 "승인" / "재시도" 버튼 표시
+- ✅ "재시도" 클릭 → 변환 내용 삭제 후 재변환 가능
+- ✅ "승인" 클릭 → 생활기록부 확정
+
+**우선순위**: 🔴 Critical (핵심 기능 통합)
+
+**상태**: ✅ 해결 완료 (2025-10-04 20:37)
+
+### 📊 최종 해결: Gemini 2.0 Flash로 전환
+
+**문제 재발견:**
+- `gemini-2.5-flash` 사용 시 Thinking 토큰이 1,012개 소모되어 비효율적
+- 2025년 9월 29일 Gemini 1.5 시리즈 공식 Deprecated 확인
+
+**최종 해결책:**
+```javascript
+// gemini-2.5-flash → gemini-2.0-flash 전환
+const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent'
+```
+
+**결과 비교:**
+
+| 항목 | gemini-2.5-flash | gemini-2.0-flash | 개선율 |
+|------|------------------|------------------|--------|
+| Thinking 토큰 | 1,012 | 0 | 100% 절감 |
+| 응답 토큰 | 18 | 27 | - |
+| 총 토큰 | 1,152 | 168 | **85% 절감** |
+| 응답 속도 | 느림 | 빠름 | 대폭 향상 |
+| 변환 품질 | 우수 | 우수 | 동일 |
+
+**최종 변환 예시:**
+- **원본**: "퀴즈풀때 under 쓸 줄 몰랐는데 r단어 알려줬어요"
+- **변환**: "퀴즈 시간에 친구에게 'r' 단어를 알려주어 돕는 따뜻함을 보임."
+- **토큰**: 프롬프트 141 + 응답 27 = 총 168 토큰
+
+**교훈**:
+- **외부 API 통합 시 모델 가용성을 먼저 확인**해야 함 (`curl` 테스트)
+- **Google의 공식 Changelog를 정기적으로 확인**하여 Deprecated 모델 파악
+- **최신 모델이 항상 최선은 아님** - Thinking 기능이 불필요한 작업에는 오히려 비효율적
+- **프롬프트 엔지니어링**이 결과 품질에 결정적 영향을 미침
+- **UI는 실패 케이스(재시도)를 반드시 고려**해야 함
+- **API 버전(`v1`, `v1beta`)과 모델 호환성**을 정확히 매칭해야 함
+- **토큰 사용량 모니터링**으로 비효율 조기 발견 가능
+
+---
+
 ## 📌 버그 통계
 
-- **총 버그 수**: 7
-- **해결된 버그**: 7
+- **총 버그 수**: 9
+- **해결된 버그**: 9
 - **미해결 버그**: 0
 
 ---
@@ -645,7 +945,15 @@ Error: 이미 활성화된 요청이 있습니다.
 ### 4. **Supabase 조인 문제** (1건)
 - 외래 키 명시 없이 자동 조인 실패
 
+### 5. **AI/프롬프트 엔지니어링** (2건)
+- 프롬프트 제약 조건 부족으로 장황한 결과 생성
+- Thinking 토큰 과다 소모로 실제 응답 생성 실패
+
+### 6. **외부 API 통합** (1건)
+- API 키 유효성 및 모델 호환성 문제
+- UI 로직 불완전으로 수정 경로 부재
+
 ---
 
-**마지막 업데이트**: 2025-10-03 16:20
+**마지막 업데이트**: 2025-10-04 20:25
 **관리자**: 이창건

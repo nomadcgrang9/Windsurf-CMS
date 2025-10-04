@@ -15,6 +15,7 @@ function HelpThanksButton() {
   const [showModal, setShowModal] = useState(false)
   const [helpingStudents, setHelpingStudents] = useState([])
   const [selectedStudent, setSelectedStudent] = useState(null)
+  const [helpDescription, setHelpDescription] = useState('') // 도와준 내용
   const [loading, setLoading] = useState(false)
 
   // 내 상태 확인
@@ -97,6 +98,11 @@ function HelpThanksButton() {
       return
     }
 
+    if (!helpDescription.trim()) {
+      alert('어떻게 도와줬는지 적어주세요.')
+      return
+    }
+
     const studentId = localStorage.getItem('studentId')
     if (!studentId) return
 
@@ -110,12 +116,13 @@ function HelpThanksButton() {
         return
       }
 
-      // 포인트 지급 및 요청 종료
-      await completeHelp(studentId, selectedStudent)
+      // 포인트 지급 및 요청 종료 (도와준 내용 포함)
+      await completeHelp(studentId, selectedStudent, helpDescription.trim())
       
       setShowModal(false)
       setMyStatus(null)
       setSelectedStudent(null)
+      setHelpDescription('')
       alert('포인트가 지급되었습니다!')
     } catch (error) {
       console.error('포인트 지급 오류:', error)
@@ -187,9 +194,9 @@ function HelpThanksButton() {
 
             {/* 학생 목록 */}
             <div style={{
-              maxHeight: '300px',
+              maxHeight: '200px',
               overflowY: 'auto',
-              marginBottom: '20px'
+              marginBottom: '16px'
             }}>
               {helpingStudents.map((student) => (
                 <div
@@ -224,6 +231,53 @@ function HelpThanksButton() {
               ))}
             </div>
 
+            {/* 도와준 내용 입력 */}
+            <div style={{ marginBottom: '20px' }}>
+              <label style={{
+                display: 'block',
+                fontFamily: "'DaHyun', 'Pretendard', sans-serif",
+                fontSize: '14px',
+                fontWeight: 600,
+                color: '#333',
+                marginBottom: '8px'
+              }}>
+                어떻게 도와줬나요?
+              </label>
+              <textarea
+                value={helpDescription}
+                onChange={(e) => {
+                  if (e.target.value.length <= 200) {
+                    setHelpDescription(e.target.value)
+                  }
+                }}
+                placeholder="예: 25+8 계산이 어려웠는데 5더하기8은 13이고 10은 받아올림되서 20+10이 된다는 것을 알려줬어요."
+                style={{
+                  width: '100%',
+                  minHeight: '80px',
+                  padding: '12px',
+                  fontFamily: "'DaHyun', 'Pretendard', sans-serif",
+                  fontSize: '14px',
+                  color: '#333',
+                  border: '2px solid #E0E0E0',
+                  borderRadius: '8px',
+                  resize: 'vertical',
+                  outline: 'none',
+                  transition: 'border-color 0.2s'
+                }}
+                onFocus={(e) => e.target.style.borderColor = '#B8D4D9'}
+                onBlur={(e) => e.target.style.borderColor = '#E0E0E0'}
+              />
+              <div style={{
+                fontFamily: "'DaHyun', 'Pretendard', sans-serif",
+                fontSize: '12px',
+                color: '#999',
+                textAlign: 'right',
+                marginTop: '4px'
+              }}>
+                {helpDescription.length}/200자
+              </div>
+            </div>
+
             {/* 버튼 */}
             <div style={{
               display: 'flex',
@@ -233,6 +287,7 @@ function HelpThanksButton() {
                 onClick={() => {
                   setShowModal(false)
                   setSelectedStudent(null)
+                  setHelpDescription('')
                 }}
                 disabled={loading}
                 style={{
@@ -253,7 +308,7 @@ function HelpThanksButton() {
 
               <button
                 onClick={handleConfirm}
-                disabled={loading || !selectedStudent}
+                disabled={loading || !selectedStudent || !helpDescription.trim()}
                 style={{
                   flex: 1,
                   padding: '12px',
@@ -261,10 +316,10 @@ function HelpThanksButton() {
                   fontWeight: 600,
                   fontFamily: "'DaHyun', 'Pretendard', sans-serif",
                   color: 'white',
-                  background: loading || !selectedStudent ? '#ccc' : '#B8D4D9',
+                  background: loading || !selectedStudent || !helpDescription.trim() ? '#ccc' : '#B8D4D9',
                   border: 'none',
                   borderRadius: '8px',
-                  cursor: loading || !selectedStudent ? 'not-allowed' : 'pointer'
+                  cursor: loading || !selectedStudent || !helpDescription.trim() ? 'not-allowed' : 'pointer'
                 }}
               >
                 {loading ? '처리 중...' : '확인'}
