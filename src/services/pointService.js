@@ -150,6 +150,79 @@ export const incrementPoints = async (studentId, amount = 1) => {
  * 모든 학생의 오늘 포인트 조회 (관리자용)
  * @returns {Promise<Array>} 전체 학생 포인트 목록
  */
+/**
+ * 특정 학급의 오늘 포인트 총합 및 목표 조회
+ * @param {number} grade - 학년
+ * @param {number} classNumber - 반
+ * @returns {Promise<{current_points: number, goal_points: number}>}
+ */
+export const getTodaysClassPoints = async (grade, classNumber) => {
+  try {
+    const { data, error } = await supabase.rpc('get_class_daily_points_summary', {
+      p_grade: grade,
+      p_class_number: classNumber,
+    });
+
+    if (error) {
+      console.error('❌ 우리반 포인트 조회 실패:', error.message);
+      throw error;
+    }
+
+    // rpc가 결과를 찾지 못하면 빈 배열을 반환할 수 있음
+    if (!data || data.length === 0) {
+      return { current_points: 0, goal_points: 100 };
+    }
+
+    // rpc는 배열을 반환하므로 첫 번째 요소를 사용
+    const result = data[0];
+    return {
+      current_points: result.current_points || 0,
+      goal_points: result.goal_points || 100
+    };
+  } catch (error) {
+    console.error('❌ 우리반 포인트 RPC 호출 실패:', error.message);
+    // 실제 운영에서는 에러 처리를 더 견고하게 해야 합니다.
+    return { current_points: 0, goal_points: 100 };
+  }
+};
+
+/**
+ * 학급 목표 포인트 업데이트 또는 생성
+ * @param {number} grade - 학년
+ * @param {number} classNumber - 반
+ * @param {number} goalPoints - 새로운 목표 포인트
+ * @returns {Promise<Object>}
+ */
+export const updateClassGoal = async (grade, classNumber, goalPoints) => {
+  try {
+    const { data, error } = await supabase
+      .from('class_goals')
+      .upsert(
+        {
+          grade: grade,
+          class_number: classNumber,
+          goal_points: goalPoints,
+          updated_at: new Date(),
+        },
+        {
+          onConflict: 'grade, class_number',
+        }
+      )
+      .select()
+      .single();
+
+    if (error) {
+      console.error('❌ 목표 포인트 업데이트 실패:', error.message);
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    console.error('❌ 목표 포인트 업데이트 실패:', error.message);
+    throw error;
+  }
+};
+
 export const getAllDailyPoints = async () => {
   try {
     const today = getTodayKST()

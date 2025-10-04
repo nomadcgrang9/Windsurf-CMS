@@ -489,6 +489,47 @@ Error: 이미 활성화된 요청이 있습니다.
 
 ---
 
+## [2025-10-04] 학습안내 카드 플립 UI 버그
+
+**발생 위치**:
+- `src/modules/student/LearningGuideModule.jsx`
+- `src/modules/student/LearningGuideModule.module.css`
+
+**증상**:
+1.  **페이지 넘김 효과**: 카드 전체가 아닌 내부 콘텐츠만 회전하는 것처럼 보임.
+2.  **콘텐츠 겹침/깨짐**: 회전 시 앞면과 뒷면의 텍스트가 동시에 보임.
+3.  **배경 문제**: 회전 시 뒷면에 흰색 배경이 갑자기 나타남.
+
+**원인**:
+1.  **잘못된 JSX 구조**: 불필요한 내부 `div` 래퍼를 사용하여 3D transform 컨텍스트가 깨짐.
+2.  **CSS 상속 문제**: `module-card`의 배경색이 투명한 자식 요소(`cardFront`, `cardBack`)에 비쳐 보임.
+3.  **`perspective` 위치 오류**: `perspective` 속성이 회전하는 요소의 직접적인 부모가 아닌 곳에 위치함.
+
+**해결방법** (적용):
+1.  ✅ **JSX 구조 단순화**:
+    -   `TimerModule`과 동일하게, 회전하는 컨테이너 바로 아래에 `cardFront`와 `cardBack`을 형제 관계로 배치.
+    -   불필요한 중간 `div` 제거.
+
+2.  ✅ **CSS 구조 개선**:
+    -   `module-card`에 `perspective`와 `transform-style`을 적용.
+    -   `isFlipped` 시 `module-card` 자체가 회전하도록 `.flipped` 클래스 로직 수정.
+    -   `cardFront`와 `cardBack`에 각각 `background: white`와 `border-radius`를 명시하여 서로 비치지 않도록 함.
+
+**수정 파일**:
+- `src/modules/student/LearningGuideModule.jsx`
+- `src/modules/student/LearningGuideModule.module.css`
+
+**테스트 결과**:
+- ✅ 카드 전체가 자연스럽게 회전.
+- ✅ 회전 시 앞/뒷면 콘텐츠가 겹치지 않음.
+- ✅ 다른 플립 카드(`TimerModule` 등)와 동일한 UI/UX 제공.
+
+**우선순위**: 🟠 Medium (UI/UX 저해)
+
+**상태**: ✅ 해결 완료 (2025-10-04 09:40)
+
+---
+
 ## [2025-10-03] 쪽지 시스템 Realtime 및 데이터 조회 버그
 
 **발생 위치**: 

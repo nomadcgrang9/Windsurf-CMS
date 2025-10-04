@@ -9,7 +9,7 @@ import './AdminHelpTab.css'
  * - 도움 상태 지정: 도와줄래/도와줄게 지정 및 해제
  */
 function AdminHelpTab() {
-  const [expandedSection, setExpandedSection] = useState(null)
+  const [accordions, setAccordions] = useState({ reset: false, assign: true })
   
   // 도움상황 리셋
   const [resetInput, setResetInput] = useState('')
@@ -186,12 +186,12 @@ function AdminHelpTab() {
       <div className="help-section">
         <button 
           className="section-toggle"
-          onClick={() => setExpandedSection(expandedSection === 'reset' ? null : 'reset')}
+          onClick={() => setAccordions(prev => ({ ...prev, reset: !prev.reset }))}
         >
-          {expandedSection === 'reset' ? '▼' : '▶'} 도움상황 리셋
+          {accordions.reset ? '▼' : '▶'} 도움상황 리셋
         </button>
 
-        {expandedSection === 'reset' && (
+        {accordions.reset && (
           <div className="section-content">
             <div className="reset-container">
               <input
@@ -223,12 +223,12 @@ function AdminHelpTab() {
       <div className="help-section">
         <button 
           className="section-toggle"
-          onClick={() => setExpandedSection(expandedSection === 'assign' ? null : 'assign')}
+          onClick={() => setAccordions(prev => ({ ...prev, assign: !prev.assign }))}
         >
-          {expandedSection === 'assign' ? '▼' : '▶'} 도움 상태 지정
+          {accordions.assign ? '▼' : '▶'} 도움 상태 지정
         </button>
 
-        {expandedSection === 'assign' && (
+        {accordions.assign && (
           <div className="section-content">
             <div className="class-select-container">
               <input

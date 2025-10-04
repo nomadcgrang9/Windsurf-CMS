@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { createLearningGuide, updateLearningGuide } from '../services/learningGuideService'
+import { createLearningGuide, updateFullLearningGuide } from '../services/learningGuideService'
 
 /**
  * 학습안내 테스트 페이지
@@ -27,11 +27,11 @@ function TestLearningGuidePage() {
     try {
       // 먼저 업데이트 시도
       try {
-        await updateLearningGuide(classInfo, content)
+        await updateFullLearningGuide(classInfo, content, '') // additionalContent는 빈 문자열로 전달
         setMessage('✅ 학습안내가 업데이트되었습니다!')
       } catch (updateError) {
         // 업데이트 실패 시 새로 생성
-        await createLearningGuide(classInfo, content)
+        await createLearningGuide(classInfo, content, '') // additionalContent는 빈 문자열로 전달
         setMessage('✅ 학습안내가 생성되었습니다!')
       }
       

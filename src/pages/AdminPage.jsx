@@ -107,7 +107,7 @@ function AdminPage() {
             transition: 'all 0.2s'
           }}
         >
-          학습안내 입력
+          학습안내
         </button>
         <button
           onClick={() => setActiveTab('points')}

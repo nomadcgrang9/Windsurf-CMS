@@ -9,7 +9,7 @@ import './AdminRandomPickTab.css'
  */
 function AdminRandomPickTab() {
   const [categories, setCategories] = useState([])
-  const [expandedSection, setExpandedSection] = useState(null)
+  const [accordions, setAccordions] = useState({ create: false, edit: true })
   
   // 카테고리 생성
   const [newCategoryName, setNewCategoryName] = useState('')
@@ -73,7 +73,6 @@ function AdminRandomPickTab() {
       setNewCategoryName('')
       setNewItems([''])
       fetchCategories()
-      setExpandedSection(null)
     } else {
       alert('저장 실패: ' + error.message)
     }
@@ -84,7 +83,7 @@ function AdminRandomPickTab() {
     setEditingCategory(category)
     setEditCategoryName(category.category_name)
     setEditItems([...category.items])
-    setExpandedSection('edit')
+    setAccordions(prev => ({ ...prev, edit: true }))
   }
 
   const updateEditItem = (index, value) => {
@@ -126,7 +125,6 @@ function AdminRandomPickTab() {
       alert('카테고리가 수정되었습니다')
       setEditingCategory(null)
       fetchCategories()
-      setExpandedSection(null)
     } else {
       alert('수정 실패: ' + error.message)
     }
@@ -165,12 +163,12 @@ function AdminRandomPickTab() {
       <div className="pick-section">
         <button 
           className="section-toggle"
-          onClick={() => setExpandedSection(expandedSection === 'create' ? null : 'create')}
+          onClick={() => setAccordions(prev => ({ ...prev, create: !prev.create }))}
         >
-          {expandedSection === 'create' ? '▼' : '▶'} 카테고리 생성
+          {accordions.create ? '▼' : '▶'} 카테고리 생성
         </button>
 
-        {expandedSection === 'create' && (
+        {accordions.create && (
           <div className="section-content">
             <input
               type="text"
@@ -217,12 +215,12 @@ function AdminRandomPickTab() {
       <div className="pick-section">
         <button 
           className="section-toggle"
-          onClick={() => setExpandedSection(expandedSection === 'edit' ? null : 'edit')}
+          onClick={() => setAccordions(prev => ({ ...prev, edit: !prev.edit }))}
         >
-          {expandedSection === 'edit' ? '▼' : '▶'} 카테고리 수정/삭제
+          {accordions.edit ? '▼' : '▶'} 카테고리 수정/삭제
         </button>
 
-        {expandedSection === 'edit' && (
+        {accordions.edit && (
           <div className="section-content">
             <div className="categories-list">
               {categories.map(category => (

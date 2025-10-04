@@ -762,6 +762,42 @@ class-management-system/
   - 도움알림/3버튼 컴팩트하게 유지
   - 전체 밸런스 개선
 
+### 2025-10-04 09:43 - 학습안내 기능 확장 및 관리자 UI 개편
+- **수정된 파일**:
+  - `src/modules/student/LearningGuideModule.jsx` + `.module.css`
+  - `src/services/learningGuideService.js`
+  - `src/modules/admin/AdminLearningGuideTab.jsx`
+  - `src/pages/TestLearningGuidePage.jsx`
+
+- **주요 변경사항**:
+  1.  **학습안내 카드 플립 기능 추가**:
+      -   학생 페이지의 학습안내 카드를 클릭하면 뒷면으로 회전.
+      -   앞면: 기본 학습안내, 뒷면: 추가안내 표시.
+      -   `TimerModule` 등 다른 플립 카드와 동일한 UI/UX로 통일.
+
+  2.  **데이터베이스 스키마 확장**:
+      -   `learning_guide` 테이블에 `additional_content` (TEXT) 컬럼 추가.
+
+  3.  **백엔드 서비스 기능 분리**:
+      -   `updateLearningGuide` → `updateFullLearningGuide`로 변경.
+      -   `updateLearningGuideContent` (학습안내만 저장), `updateLearningGuideAdditionalContent` (추가안내만 저장) 함수 추가.
+
+  4.  **관리자 페이지 UI 개편**:
+      -   '추가안내 내용' 입력 `textarea` 추가.
+      -   기존 '통합 저장' 버튼을 3개로 분리:
+          -   **학습안내만 저장** (파란색)
+          -   **추가안내만 저장** (초록색)
+          -   **통합 저장** (보라색)
+
+  5.  **테스트 페이지 수정**:
+      -   변경된 서비스 함수(`updateFullLearningGuide`)를 사용하도록 수정하여 `vite` 오류 해결.
+
+- **효과**:
+  -   학습안내 공간을 2배로 확장하여 더 많은 정보 제공 가능.
+  -   관리자가 각 내용을 독립적으로 수정할 수 있어 편의성 증대.
+
+---
+
 ### 2025-10-03 07:53 - Phase 3-2: 오늘의 포인트 모듈 구현 완료
 - **생성된 파일**:
   - `src/services/pointService.js`: 포인트 CRUD 서비스
@@ -917,6 +953,16 @@ class-management-system/
   4. 학생 A: 도움 받음 → "고마워" 클릭
   5. 모달에서 B 선택 → B 포인트 +1
   6. 도움알림판: A, B 모두 회색 복귀
+
+### 2025-10-04 07:58 - 학습안내 대상 입력 & 로그인 캐릭터 이미지 개선
+- **수정된 파일**:
+  - `src/modules/admin/AdminLearningGuideTab.jsx`: 학년 선택 드롭다운을 자유 입력 필드로 교체하고 `3-1`, `3학년`, `전체` 등 문자열을 파싱하여 해당 학급 목록을 계산하도록 개선. 학생 데이터(`getAllStudentsWithLoginStatus`)를 기반으로 존재하는 학급만 허용하고, 에러 메시지 및 성공 메시지를 범위 라벨에 맞게 출력하도록 로직 재작성.
+  - `src/styles/student.css`: `.character img`에 `max-height: 180px`, `max-width: 100%`를 적용해 긴 캔버스 이미지가 로그인 폼을 가리지 않도록 축소되게 조정.
+
+- **효과**:
+  - 관리자 학습안내 탭에서 텍스트 입력만으로 학년·학급·전체 범위를 유연하게 지정 가능.
+  - 존재하지 않는 학급 입력 시 즉시 안내하여 데이터 정합성 강화.
+  - 학생 로그인 페이지에 업로드된 캐릭터 이미지가 자동으로 리사이즈되어 레이아웃을 침범하지 않음.
 
 - **다음 단계**: 
   - Phase 4: 관리자 페이지 구현

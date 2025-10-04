@@ -10,7 +10,7 @@ import './AdminRoleTab.css'
  */
 function AdminRoleTab() {
   const [sessions, setSessions] = useState([])
-  const [expandedSection, setExpandedSection] = useState(null)
+  const [accordions, setAccordions] = useState({ create: false, assign: false, edit: true })
   
   // 세션 생성
   const [newSessionName, setNewSessionName] = useState('')
@@ -78,7 +78,6 @@ function AdminRoleTab() {
       setNewSessionName('')
       setNewRoles([''])
       fetchSessions()
-      setExpandedSection(null)
     } else {
       alert('저장 실패: ' + error.message)
     }
@@ -249,7 +248,7 @@ function AdminRoleTab() {
     setEditingSession(session)
     setEditSessionName(session.session_name)
     setEditRoles([...session.roles])
-    setExpandedSection('edit')
+    setAccordions(prev => ({ ...prev, edit: true }))
   }
 
   const updateEditRole = (index, value) => {
@@ -291,7 +290,6 @@ function AdminRoleTab() {
       alert('세션이 수정되었습니다')
       setEditingSession(null)
       fetchSessions()
-      setExpandedSection(null)
     } else {
       alert('수정 실패: ' + error.message)
     }
@@ -319,12 +317,12 @@ function AdminRoleTab() {
       <div className="role-section">
         <button 
           className="section-toggle"
-          onClick={() => setExpandedSection(expandedSection === 'create' ? null : 'create')}
+          onClick={() => setAccordions(prev => ({ ...prev, create: !prev.create }))}
         >
-          {expandedSection === 'create' ? '▼' : '▶'} 세션 생성
+          {accordions.create ? '▼' : '▶'} 세션 생성
         </button>
 
-        {expandedSection === 'create' && (
+        {accordions.create && (
           <div className="section-content">
             <input
               type="text"
@@ -372,12 +370,12 @@ function AdminRoleTab() {
       <div className="role-section">
         <button 
           className="section-toggle"
-          onClick={() => setExpandedSection(expandedSection === 'assign' ? null : 'assign')}
+          onClick={() => setAccordions(prev => ({ ...prev, assign: !prev.assign }))}
         >
-          {expandedSection === 'assign' ? '▼' : '▶'} 세션 배부
+          {accordions.assign ? '▼' : '▶'} 세션 배부
         </button>
 
-        {expandedSection === 'assign' && (
+        {accordions.assign && (
           <div className="section-content">
             <select
               value={selectedSessionId}
@@ -432,12 +430,12 @@ function AdminRoleTab() {
       <div className="role-section">
         <button 
           className="section-toggle"
-          onClick={() => setExpandedSection(expandedSection === 'edit' ? null : 'edit')}
+          onClick={() => setAccordions(prev => ({ ...prev, edit: !prev.edit }))}
         >
-          {expandedSection === 'edit' ? '▼' : '▶'} 세션 수정
+          {accordions.edit ? '▼' : '▶'} 세션 수정
         </button>
 
-        {expandedSection === 'edit' && (
+        {accordions.edit && (
           <div className="section-content">
             <div className="sessions-list">
               {sessions.map(session => (
