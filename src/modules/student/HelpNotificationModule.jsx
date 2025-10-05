@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { getActiveHelpRequests } from '../../services/helpService'
 import { parseStudentId } from '../../utils/formatUtils'
 import { supabase } from '../../services/supabaseClient'
+import LearningRecordPanel from './LearningRecordPanel'
+import styles from './LearningGuideModule.module.css'
 
 /**
  * 도움알림 모듈
@@ -9,10 +11,12 @@ import { supabase } from '../../services/supabaseClient'
  * - 학급 접속 학생 목록 표시
  * - 상태별 표시: 주황(도와줄래), 하늘(도와줄게), 회색(일반)
  * - Realtime 구독으로 즉시 업데이트
+ * - 플립 기능: 클릭 시 배움기록 작성 화면으로 전환
  */
 function HelpNotificationModule() {
   const [students, setStudents] = useState([])
   const [loading, setLoading] = useState(true)
+  const [isFlipped, setIsFlipped] = useState(false)
 
   // 도움 상태 조회
   const fetchHelpStatus = async () => {
@@ -114,68 +118,118 @@ function HelpNotificationModule() {
     )
   }
 
-  return (
-    <div className="help-notification-module">
-      <h2 style={{
-        fontFamily: "'DaHyun', 'Pretendard', sans-serif",
-        fontSize: '28px',
-        fontWeight: 700,
-        color: '#333333',
-        marginBottom: '16px',
-        textAlign: 'center'
-      }}>
-        도움알림
-      </h2>
+  const handleCardClick = (e) => {
+    // 입력 영역(섹션 박스) 내부 클릭 시 플립 방지
+    const target = e.target
+    
+    // Textarea, Input, Button, Label, Span 클릭 방지
+    if (target.tagName === 'TEXTAREA' || 
+        target.tagName === 'INPUT' || 
+        target.tagName === 'BUTTON' ||
+        target.tagName === 'LABEL' ||
+        target.tagName === 'SPAN' ||
+        target.tagName === 'H3' ||
+        target.closest('button') ||
+        target.closest('textarea') ||
+        target.closest('input') ||
+        target.closest('label')) {
+      return
+    }
+    
+    // 섹션 박스 내부 클릭 방지 (border가 있는 div)
+    const sectionBox = target.closest('div[style*="border: 2px solid"]')
+    if (sectionBox && sectionBox !== e.currentTarget) {
+      return
+    }
+    
+    setIsFlipped(!isFlipped)
+  }
 
-      {/* 학생 그리드 */}
-      {loading ? (
-        <div style={{
-          textAlign: 'center',
-          padding: '40px',
-          color: '#999',
-          fontFamily: "'DaHyun', 'Pretendard', sans-serif"
+  return (
+    <div 
+      className="help-notification-module"
+      style={{ 
+        position: 'relative'
+      }}
+    >
+      <div 
+        className={`${styles.flipContainer} ${isFlipped ? styles.flipped : ''}`}
+        onClick={handleCardClick}
+        style={{ 
+          cursor: 'pointer',
+          width: '100%',
+          height: '100%'
+        }}
+      >
+      {/* 앞면: 도움알림판 */}
+      <div className={styles.cardFront} style={{ padding: '12px' }}>
+        <h2 style={{
+          fontFamily: "'DaHyun', 'Pretendard', sans-serif",
+          fontSize: '28px',
+          fontWeight: 700,
+          color: '#333333',
+          marginBottom: '16px',
+          textAlign: 'center'
         }}>
-          불러오는 중...
-        </div>
-      ) : (
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(7, 1fr)',
-          gap: '6px'
-        }}>
-          {students.map((student) => (
-            <div
-              key={student.student_id}
-              style={{
-                background: '#FFFFFF',
-                border: `2px solid ${getStatusColor(student.status, student.is_active)}`,
-                borderRadius: '6px',
-                padding: '6px 2px',
-                textAlign: 'center',
-                transition: 'all 0.3s ease',
-                minHeight: '50px',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-            >
-              <div style={{ marginBottom: '3px' }}>
-                {getStatusIcon(student.status, student.is_active)}
+          도움알림
+        </h2>
+
+        {/* 학생 그리드 */}
+        {loading ? (
+          <div style={{
+            textAlign: 'center',
+            padding: '40px',
+            color: '#999',
+            fontFamily: "'DaHyun', 'Pretendard', sans-serif"
+          }}>
+            불러오는 중...
+          </div>
+        ) : (
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(7, 1fr)',
+            gap: '6px'
+          }}>
+            {students.map((student) => (
+              <div
+                key={student.student_id}
+                style={{
+                  background: '#FFFFFF',
+                  border: `2px solid ${getStatusColor(student.status, student.is_active)}`,
+                  borderRadius: '6px',
+                  padding: '6px 2px',
+                  textAlign: 'center',
+                  transition: 'all 0.3s ease',
+                  minHeight: '50px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                <div style={{ marginBottom: '3px' }}>
+                  {getStatusIcon(student.status, student.is_active)}
+                </div>
+                <div style={{
+                  fontFamily: "'DaHyun', 'Pretendard', sans-serif",
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  color: '#333333',
+                  lineHeight: '1.2'
+                }}>
+                  {student.name}
+                </div>
               </div>
-              <div style={{
-                fontFamily: "'DaHyun', 'Pretendard', sans-serif",
-                fontSize: '12px',
-                fontWeight: 600,
-                color: '#333333',
-                lineHeight: '1.2'
-              }}>
-                {student.name}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* 뒷면: 배움기록 */}
+      <div className={styles.cardBack} style={{ padding: 0, overflow: 'hidden' }}>
+        <LearningRecordPanel />
+      </div>
+      </div>
     </div>
   )
 }

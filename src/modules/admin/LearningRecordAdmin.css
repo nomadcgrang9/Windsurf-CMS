@@ -1,0 +1,258 @@
+/* 배움기록 관리 스타일 */
+
+.learning-record-admin {
+  padding: 20px;
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* 검색 바 */
+.search-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 15px;
+  background: #F8F9FA;
+  border-radius: 8px;
+}
+
+.search-input-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.search-input-group label {
+  font-weight: 600;
+  color: #333;
+}
+
+.search-input-group input {
+  padding: 8px 12px;
+  border: 1px solid #D0D0D0;
+  border-radius: 6px;
+  font-size: 14px;
+  width: 200px;
+}
+
+.search-input-group button {
+  padding: 8px 20px;
+  background: #B8D4D9;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.search-input-group button:hover {
+  background: #A0C4C9;
+}
+
+.search-input-group button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.export-btn {
+  padding: 8px 20px;
+  background: white;
+  color: #333;
+  border: 2px solid #B8D4D9;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.export-btn:hover {
+  background: #B8D4D9;
+  color: white;
+}
+
+/* 메시지 */
+.message {
+  padding: 12px;
+  margin-bottom: 15px;
+  background: #E8F5E9;
+  border: 1px solid #66BB6A;
+  border-radius: 6px;
+  color: #2E7D32;
+  text-align: center;
+}
+
+/* 테이블 컨테이너 */
+.table-container {
+  overflow-x: auto;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 테이블 */
+.record-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.record-table thead {
+  background: #F8F9FA;
+  border-bottom: 2px solid #E0E0E0;
+}
+
+.record-table th {
+  padding: 12px 8px;
+  text-align: left;
+  font-weight: 600;
+  color: #333;
+}
+
+.record-table td {
+  padding: 12px 8px;
+  border-bottom: 1px solid #F0F0F0;
+  vertical-align: top;
+}
+
+.record-table tbody tr:hover {
+  background: #F8F9FA;
+}
+
+/* 날짜 셀 */
+.date-cell {
+  position: relative;
+}
+
+.date-toggle {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.toggle-btn {
+  padding: 2px 6px;
+  background: white;
+  border: 1px solid #D0D0D0;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s;
+}
+
+.toggle-btn:hover {
+  background: #F0F0F0;
+}
+
+.date-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 10;
+  background: white;
+  border: 1px solid #D0D0D0;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  min-width: 150px;
+  margin-top: 5px;
+}
+
+.date-option {
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.date-option:hover {
+  background: #F0F0F0;
+}
+
+.date-option.active {
+  background: #E3F2FD;
+  color: #1976D2;
+  font-weight: 600;
+}
+
+/* 핵심배움 */
+.core-learning {
+  line-height: 1.5;
+  color: #333;
+}
+
+/* AI 변환 내용 */
+.ai-content {
+  line-height: 1.5;
+  color: #333;
+}
+
+.convert-btn {
+  padding: 6px 16px;
+  background: #B8D4D9;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.convert-btn:hover {
+  background: #A0C4C9;
+}
+
+.convert-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+/* 작업 버튼 */
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.approve-btn {
+  padding: 6px 12px;
+  background: #66BB6A;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 13px;
+}
+
+.approve-btn:hover {
+  background: #4CAF50;
+}
+
+.approve-btn:disabled {
+  background: #A5D6A7;
+  cursor: not-allowed;
+}
+
+.delete-btn {
+  padding: 6px 12px;
+  background: white;
+  color: #EF5350;
+  border: 1px solid #EF5350;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 13px;
+}
+
+.delete-btn:hover {
+  background: #EF5350;
+  color: white;
+}
+
+/* 승인 체크박스 */
+.approval input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: default;
+}

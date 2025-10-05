@@ -121,3 +121,101 @@ export const convertToRecordFormat = async (helpDescription) => {
 export const isGeminiApiKeyConfigured = () => {
   return !!GEMINI_API_KEY && GEMINI_API_KEY.length > 0
 }
+
+/**
+ * 배움기록을 생활기록부 형식으로 변환
+ * @param {string} studentName - 학생 이름
+ * @param {string} coreLearning - 핵심배움 내용
+ * @param {Array<string>} learningProcess - 학습과정 체크리스트
+ * @returns {Promise<string>} AI가 변환한 생활기록부 형식 내용
+ */
+export const generateSchoolRecord = async (studentName, coreLearning, learningProcess) => {
+  console.log('🔍 [배움기록 변환] 시작')
+  console.log('학생명:', studentName)
+  console.log('핵심배움:', coreLearning)
+  console.log('학습과정:', learningProcess)
+  
+  if (!GEMINI_API_KEY) {
+    throw new Error('Gemini API 키가 설정되지 않았습니다.')
+  }
+  
+  if (!coreLearning || coreLearning.trim().length === 0) {
+    throw new Error('핵심배움 내용이 없습니다.')
+  }
+
+  try {
+    // 학습과정을 문장으로 변환
+    const processText = learningProcess && learningProcess.length > 0
+      ? learningProcess.join(', ')
+      : '없음'
+
+    // 프롬프트 생성 (개선 버전 1: 주어 제거)
+    const prompt = `다음은 초등학생의 배움기록입니다. 이를 생활기록부 형식으로 변환하세요.
+
+핵심배움: ${coreLearning}
+학습태도: ${processText}
+
+규칙:
+1. 주어 없이 서술 (예: "친구를 도와주며~", "적극적으로~")
+2. 2-3문장으로 간결하게
+3. "~하였음", "~보였음" 등 과거형 종결
+4. 학습 내용과 태도를 자연스럽게 연결
+5. 변환된 문장만 출력 (설명 금지)
+
+예시:
+"분수의 덧셈에서 분모를 통분하는 방법을 이해하였으며, 친구를 도와주고 적극적으로 질문하는 등 협력적 학습 태도를 보였음."
+
+변환:`
+
+    console.log('✅ 프롬프트 생성 완료')
+    console.log('🌐 Gemini API 호출 시작')
+
+    const requestBody = {
+      contents: [{
+        parts: [{
+          text: prompt
+        }]
+      }],
+      generationConfig: {
+        temperature: 0.7,
+        topK: 40,
+        topP: 0.95,
+        maxOutputTokens: 10000
+      }
+    }
+
+    const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(requestBody)
+    })
+
+    console.log('📡 응답 받음 - 상태 코드:', response.status)
+
+    if (!response.ok) {
+      const errorData = await response.json()
+      console.error('❌ API 오류:', errorData)
+      throw new Error(`Gemini API 호출 실패: ${response.status}`)
+    }
+
+    const data = await response.json()
+    console.log('📥 응답 데이터:', data)
+    
+    if (data.candidates && data.candidates.length > 0) {
+      const candidate = data.candidates[0]
+      
+      if (candidate.content && candidate.content.parts && candidate.content.parts.length > 0) {
+        const convertedText = candidate.content.parts[0].text.trim()
+        console.log('✅ 변환 성공:', convertedText)
+        return convertedText
+      }
+    }
+
+    throw new Error('AI 변환 결과가 비어있습니다.')
+  } catch (error) {
+    console.error('❌ 배움기록 변환 실패:', error)
+    throw error
+  }
+}

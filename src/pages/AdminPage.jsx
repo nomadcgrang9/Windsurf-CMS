@@ -5,7 +5,7 @@ import AdminPointsTab from '../modules/admin/AdminPointsTab'
 import AdminClassTab from '../modules/admin/AdminClassTab'
 import AdminRoleTab from '../modules/admin/AdminRoleTab'
 import AdminHelpTab from '../modules/admin/AdminHelpTab'
-import AdminHelpRecordsTab from '../modules/admin/AdminHelpRecordsTab'
+import AIRecordTab from '../modules/admin/AIRecordTab'
 import AdminHoverMessageTab from '../modules/admin/AdminHoverMessageTab'
 import AdminMessageTab from '../modules/admin/AdminMessageTab'
 import AdminRandomPickTab from '../modules/admin/AdminRandomPickTab'
@@ -188,7 +188,7 @@ function AdminPage() {
             transition: 'all 0.2s'
           }}
         >
-          도움내용
+          AI생기부
         </button>
         <button
           onClick={() => setActiveTab('hover')}
@@ -256,7 +256,7 @@ function AdminPage() {
         
         {activeTab === 'help' && <AdminHelpTab />}
         
-        {activeTab === 'helpRecords' && <AdminHelpRecordsTab />}
+        {activeTab === 'helpRecords' && <AIRecordTab />}
         
         {activeTab === 'hover' && <AdminHoverMessageTab />}
         

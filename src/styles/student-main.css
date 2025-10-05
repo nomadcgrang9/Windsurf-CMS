@@ -79,7 +79,7 @@
 .help-notification-module {
   grid-column: 3 / 6;
   grid-row: 2;
-  padding: 15px 16px;
+  padding: 0;
   background: #FFFFFF;
   border: 1px solid #E0E0E0;
   border-radius: 12px;

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../../services/supabaseClient'
 import { convertToRecordFormat, isGeminiApiKeyConfigured } from '../../services/geminiService'
+import { exportHelpRecords } from '../../utils/excelExport'
 
 /**
  * 관리자 - 도움내용 탭
@@ -240,39 +241,57 @@ function AdminHelpRecordsTab() {
         display: 'flex',
         gap: '12px',
         marginBottom: '24px',
-        alignItems: 'center'
+        alignItems: 'center',
+        justifyContent: 'space-between'
       }}>
-        <input
-          type="text"
-          value={classInput}
-          onChange={(e) => setClassInput(e.target.value)}
-          onKeyPress={(e) => e.key === 'Enter' && fetchRecords()}
-          placeholder="조회 범위 (예: 3-1, 3학년, 전체)"
-          style={{
-            flex: 1,
-            maxWidth: '300px',
-            padding: '12px',
-            fontSize: '14px',
-            border: '2px solid #E0E0E0',
-            borderRadius: '6px',
-            outline: 'none'
-          }}
-        />
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+          <input
+            type="text"
+            value={classInput}
+            onChange={(e) => setClassInput(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && fetchRecords()}
+            placeholder="조회 범위 (예: 3-1, 3학년, 전체)"
+            style={{
+              width: '300px',
+              padding: '12px',
+              fontSize: '14px',
+              border: '2px solid #E0E0E0',
+              borderRadius: '6px',
+              outline: 'none'
+            }}
+          />
+          <button
+            onClick={fetchRecords}
+            disabled={loading}
+            style={{
+              padding: '12px 24px',
+              fontSize: '14px',
+              fontWeight: 600,
+              color: 'white',
+              background: loading ? '#ccc' : '#667eea',
+              border: 'none',
+              borderRadius: '6px',
+              cursor: loading ? 'not-allowed' : 'pointer'
+            }}
+          >
+            {loading ? '조회 중...' : '조회'}
+          </button>
+        </div>
         <button
-          onClick={fetchRecords}
-          disabled={loading}
+          onClick={() => exportHelpRecords(records, classInput)}
+          disabled={records.length === 0}
           style={{
             padding: '12px 24px',
             fontSize: '14px',
             fontWeight: 600,
             color: 'white',
-            background: loading ? '#ccc' : '#667eea',
+            background: records.length === 0 ? '#ccc' : '#4CAF50',
             border: 'none',
             borderRadius: '6px',
-            cursor: loading ? 'not-allowed' : 'pointer'
+            cursor: records.length === 0 ? 'not-allowed' : 'pointer'
           }}
         >
-          {loading ? '조회 중...' : '조회'}
+          📥 전체 다운로드
         </button>
       </div>
 

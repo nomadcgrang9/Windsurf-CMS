@@ -1,0 +1,35 @@
+/* 커스텀 체크박스 스타일 */
+.custom-checkbox {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #D0D0D0;
+  border-radius: 3px;
+  background-color: white;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s;
+}
+
+.custom-checkbox:checked {
+  background-color: #B8D4D9;
+  border-color: #B8D4D9;
+}
+
+.custom-checkbox:checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 14px;
+  font-weight: normal;
+}
+
+.custom-checkbox:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
