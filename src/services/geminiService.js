@@ -102,6 +102,11 @@ export const convertToRecordFormat = async (helpDescription) => {
  * @returns {boolean} API 키 존재 여부
  */
 export const isGeminiApiKeyConfigured = () => {
+  // 프로덕션 환경: Cloudflare Functions 사용하므로 항상 true
+  if (!import.meta.env.DEV) {
+    return true
+  }
+  // 로컬 개발 환경: API 키 필요
   return !!GEMINI_API_KEY && GEMINI_API_KEY.length > 0
 }
 
