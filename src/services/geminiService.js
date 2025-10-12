@@ -7,6 +7,14 @@
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY
 const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent'
 
+// 디버깅: 환경 변수 로드 확인
+console.log('🔍 [환경변수 체크]')
+console.log('- import.meta.env:', import.meta.env)
+console.log('- VITE_GEMINI_API_KEY 존재:', !!GEMINI_API_KEY)
+if (GEMINI_API_KEY) {
+  console.log('- API 키 앞 20자:', GEMINI_API_KEY.substring(0, 20) + '...')
+}
+
 /**
  * 도와준 내용을 생활기록부 형식으로 변환
  * @param {string} helpDescription - 학생이 작성한 원본 도와준 내용
