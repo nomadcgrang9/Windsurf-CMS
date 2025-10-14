@@ -115,7 +115,7 @@ function HelpGiveButton() {
         >
           <img src="/characters/a-help.png" alt="도와줄게!" className="help-icon" />
           <div style={{ marginTop: '8px' }}>
-            {todayThanksCount >= MAX_DAILY_HELPS ? '오늘 한도 달성 ✓' : '도와줄게!'}
+            {todayThanksCount >= MAX_DAILY_HELPS ? '도움완료' : '도와줄게!'}
           </div>
           {todayThanksCount > 0 && todayThanksCount < MAX_DAILY_HELPS && (
             <div style={{ fontSize: '11px', color: '#999', marginTop: '4px' }}>

@@ -1,6 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
 import { getLearningGuide } from '../../services/learningGuideService'
 import { parseStudentId } from '../../utils/formatUtils'
+import FriendVoteModal from './FriendVoteModal'
+import { getActiveVoteSession, hasStudentVoted, subscribeToVoteSessions } from '../../services/voteService'
+import { supabase } from '../../services/supabaseClient'
 import styles from './LearningGuideModule.module.css'
 
 function LearningGuideModule() {
@@ -10,6 +13,56 @@ function LearningGuideModule() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const contentRef = useRef(null)
+  
+  // 친구 투표 관련 상태
+  const [showVoteModal, setShowVoteModal] = useState(false)
+  const [activeVoteSession, setActiveVoteSession] = useState(null)
+  const [hasVoted, setHasVoted] = useState(false)
+  
+  // 활성 투표 세션 확인
+  const checkActiveVoteSession = async () => {
+    console.log('🗳️ [투표] checkActiveVoteSession 호출됨')
+    try {
+      const { data: session, error } = await getActiveVoteSession()
+      console.log('🗳️ [투표] 세션 조회 결과:', session, error)
+      if (error) throw error
+      
+      if (session) {
+        console.log('🗳️ [투표] 활성 세션 발견:', session)
+        setActiveVoteSession(session)
+        
+        // 학생의 투표 여부 확인
+        const studentId = localStorage.getItem('studentId')
+        if (studentId) {
+          const { data: voted } = await hasStudentVoted(session.id, studentId)
+          console.log('🗳️ [투표] 투표 여부:', voted)
+          setHasVoted(voted || false)
+        }
+      } else {
+        console.log('🗳️ [투표] 활성 세션 없음')
+        setActiveVoteSession(null)
+        setHasVoted(false)
+      }
+    } catch (error) {
+      console.error('🗳️ [투표] 활성 투표 세션 확인 오류:', error)
+    }
+  }
+
+  // 투표 세션 Realtime 구독
+  useEffect(() => {
+    console.log('🗳️ [투표] useEffect 실행됨')
+    checkActiveVoteSession()
+    
+    const channel = subscribeToVoteSessions((payload) => {
+      console.log('🗳️ [투표] 세션 변경:', payload)
+      checkActiveVoteSession()
+    })
+    
+    return () => {
+      console.log('🗳️ [투표] 구독 해제')
+      supabase.removeChannel(channel)
+    }
+  }, [])
 
   const fetchLearningGuide = async () => {
     try {
@@ -97,7 +150,37 @@ function LearningGuideModule() {
       e.stopPropagation()
       return
     }
+    // + 버튼 클릭 시 플립 방지
+    if (e.target.closest('.vote-button')) {
+      e.stopPropagation()
+      return
+    }
     setIsFlipped(!isFlipped)
+  }
+  
+  // 투표 버튼 클릭
+  const handleVoteButtonClick = (e) => {
+    e.stopPropagation()
+    
+    console.log('🗳️ [투표] 버튼 클릭 - activeVoteSession:', activeVoteSession)
+    console.log('🗳️ [투표] 버튼 클릭 - hasVoted:', hasVoted)
+    
+    // 투표 세션이 없거나 이미 투표한 경우
+    if (!activeVoteSession) {
+      console.log('🗳️ [투표] 세션 없음 - 알림 표시')
+      alert('⚠️ 투표가 시작되지 않았습니다.\n\n선생님이 투표를 시작하시면 참여할 수 있습니다.')
+      return
+    }
+    
+    if (hasVoted) {
+      console.log('🗳️ [투표] 이미 투표 완료')
+      alert('✅ 이미 투표를 완료하셨습니다.')
+      return
+    }
+    
+    // 정상적으로 투표 모달 열기
+    console.log('🗳️ [투표] 모달 열기')
+    setShowVoteModal(true)
   }
 
   const renderContentWithLinks = (text) => {
@@ -152,15 +235,52 @@ function LearningGuideModule() {
     flexShrink: 0
   }
 
+  // 투표 버튼 항상 표시 (상태에 따라 다른 동작)
+  const showVoteButton = true
+  
   return (
-    <div 
-      className={`module-card ${styles.flipContainer} ${isFlipped ? styles.flipped : ''}`}
-      onClick={handleCardClick}
-      style={{ cursor: 'pointer', padding: 0 }} // padding: 0 추가
-    >
-      {/* 앞면 - 학습안내 */}
-      <div className={styles.cardFront}>
-        <h3 style={titleStyle}>학습안내</h3>
+    <>
+      <div 
+        className={`module-card ${styles.flipContainer} ${isFlipped ? styles.flipped : ''}`}
+        onClick={handleCardClick}
+        style={{ cursor: 'pointer', padding: 0 }}
+      >
+        {/* 앞면 - 학습안내 */}
+        <div className={styles.cardFront}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+            <h3 style={{ ...titleStyle, marginBottom: 0 }}>학습안내</h3>
+            {/* 투표 버튼 - 항상 표시, 상태에 따라 다른 스타일 */}
+            {hasVoted && activeVoteSession ? (
+              <div
+                style={{
+                  fontSize: '24px',
+                  fontWeight: 700,
+                  color: '#A8E6CF',
+                  flexShrink: 0
+                }}
+              >
+                ✓
+              </div>
+            ) : (
+              <button
+                className="vote-button"
+                onClick={handleVoteButtonClick}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  padding: 0,
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  flexShrink: 0,
+                  fontSize: '24px',
+                  fontWeight: 700,
+                  color: '#B8D4D9'
+                }}
+              >
+                +
+              </button>
+            )}
+          </div>
         <div ref={contentRef} style={contentStyle}>
           {loading ? <div style={{ textAlign: 'center', color: '#999' }}>불러오는 중...</div> : renderContentWithLinks(content)}
         </div>
@@ -174,6 +294,19 @@ function LearningGuideModule() {
         </div>
       </div>
     </div>
+    
+    {/* 친구 투표 모달 */}
+    {showVoteModal && (
+      <FriendVoteModal
+        session={activeVoteSession}
+        onClose={() => setShowVoteModal(false)}
+        onVoteComplete={() => {
+          setHasVoted(true)
+          setShowVoteModal(false)
+        }}
+      />
+    )}
+    </>
   )
 }
 

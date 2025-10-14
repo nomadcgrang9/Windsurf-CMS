@@ -25,12 +25,18 @@ function AdminRandomPickTab() {
   }, [])
 
   const fetchCategories = async () => {
+    console.log('📋 카테고리 목록 조회 중...')
     const { data, error } = await supabase
       .from('random_pick_categories')
       .select('*')
       .order('created_at', { ascending: false })
     
-    if (!error) setCategories(data || [])
+    if (!error) {
+      console.log('✅ 조회 성공:', data)
+      setCategories(data || [])
+    } else {
+      console.error('❌ 조회 실패:', error)
+    }
   }
 
   // === 카테고리 생성 ===
@@ -80,10 +86,19 @@ function AdminRandomPickTab() {
 
   // === 카테고리 수정 ===
   const startEdit = (category) => {
+    console.log('🔧 수정 시작:', category)
     setEditingCategory(category)
     setEditCategoryName(category.category_name)
     setEditItems([...category.items])
     setAccordions(prev => ({ ...prev, edit: true }))
+    
+    // 수정 폼으로 스크롤
+    setTimeout(() => {
+      const editForm = document.querySelector('.edit-form')
+      if (editForm) {
+        editForm.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+      }
+    }, 100)
   }
 
   const updateEditItem = (index, value) => {
@@ -131,7 +146,11 @@ function AdminRandomPickTab() {
   }
 
   const deleteCategory = async (id) => {
-    if (!confirm('정말 삭제하시겠습니까?')) return
+    console.log('🗑️ 삭제 시작:', id)
+    if (!confirm('정말 삭제하시겠습니까?')) {
+      console.log('❌ 삭제 취소됨')
+      return
+    }
 
     const { error } = await supabase
       .from('random_pick_categories')
@@ -139,8 +158,15 @@ function AdminRandomPickTab() {
       .eq('id', id)
 
     if (!error) {
+      console.log('✅ 삭제 성공')
       alert('삭제되었습니다')
-      fetchCategories()
+      // 즉시 상태에서 제거
+      setCategories(prev => prev.filter(cat => cat.id !== id))
+      // DB에서 다시 조회
+      await fetchCategories()
+    } else {
+      console.error('❌ 삭제 실패:', error)
+      alert('삭제 실패: ' + error.message)
     }
   }
 

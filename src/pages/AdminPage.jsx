@@ -9,6 +9,7 @@ import AIRecordTab from '../modules/admin/AIRecordTab'
 import AdminHoverMessageTab from '../modules/admin/AdminHoverMessageTab'
 import AdminMessageTab from '../modules/admin/AdminMessageTab'
 import AdminRandomPickTab from '../modules/admin/AdminRandomPickTab'
+import FriendVoteManagement from '../modules/admin/FriendVoteManagement'
 
 /**
  * 관리자 메인 페이지
@@ -18,7 +19,7 @@ import AdminRandomPickTab from '../modules/admin/AdminRandomPickTab'
  */
 function AdminPage() {
   const navigate = useNavigate()
-  const [activeTab, setActiveTab] = useState('learning') // learning, points, class, role, help, helpRecords, hover, message, pick
+  const [activeTab, setActiveTab] = useState('learning') // learning, points, class, role, help, helpRecords, hover, message, pick, vote
 
   // 로그인 확인
   useEffect(() => {
@@ -238,6 +239,22 @@ function AdminPage() {
         >
           뽑기 관리
         </button>
+        <button
+          onClick={() => setActiveTab('vote')}
+          style={{
+            padding: '16px 32px',
+            fontSize: '16px',
+            fontWeight: 600,
+            color: activeTab === 'vote' ? '#333' : '#999',
+            background: activeTab === 'vote' ? '#FFFFFF' : 'transparent',
+            border: 'none',
+            borderBottom: activeTab === 'vote' ? '3px solid #667eea' : '3px solid transparent',
+            cursor: 'pointer',
+            transition: 'all 0.2s'
+          }}
+        >
+          친구투표
+        </button>
       </div>
 
       {/* 탭 내용 */}
@@ -263,6 +280,8 @@ function AdminPage() {
         {activeTab === 'message' && <AdminMessageTab />}
         
         {activeTab === 'pick' && <AdminRandomPickTab />}
+        
+        {activeTab === 'vote' && <FriendVoteManagement />}
       </div>
     </div>
   )

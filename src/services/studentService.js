@@ -91,3 +91,26 @@ export async function getAllStudentsWithLoginStatus() {
 
   return studentsWithStatus
 }
+
+/**
+ * 학급 정보로 학생 조회 (친구 투표용)
+ * @param {string} classInfo - 학급 정보 (예: "4-1")
+ * @returns {Promise<Array>} 학생 목록
+ */
+export async function getClassStudents(classInfo) {
+  const [grade, classNumber] = classInfo.split('-').map(Number)
+  
+  const { data, error } = await supabase
+    .from('students')
+    .select('student_id, name, grade, class_number, student_number')
+    .eq('grade', grade)
+    .eq('class_number', classNumber)
+    .order('student_number')
+
+  if (error) {
+    console.error('학급 학생 조회 오류:', error)
+    throw new Error('학생 목록을 불러올 수 없습니다.')
+  }
+
+  return data || []
+}

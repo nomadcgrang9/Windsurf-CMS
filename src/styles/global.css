@@ -47,12 +47,24 @@ a {
 }
 
 /* 입력 필드 기본 스타일 */
-input, textarea {
+input, textarea, select {
   font-family: inherit;
   border: 1px solid #ddd;
   outline: none;
 }
 
-input:focus, textarea:focus {
+input:focus, textarea:focus, select:focus {
   border-color: #4a90e2;
+}
+
+/* select 드롭다운 옵션에 다현체 강제 적용 */
+select, select option {
+  font-family: 'DaHyun', 'Pretendard', sans-serif !important;
+  font-weight: normal !important;
+}
+
+/* 모든 select 요소와 option에 다현체 적용 */
+* select,
+* select option {
+  font-family: 'DaHyun', 'Pretendard', sans-serif !important;
 }

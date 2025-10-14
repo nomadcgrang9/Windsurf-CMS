@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../../services/supabaseClient'
+import { getClassStudents } from '../../services/studentService'
+import { parseStudentId } from '../../utils/formatUtils'
 import styles from './RandomPickModule.module.css'
 
 /**
@@ -37,7 +39,7 @@ function RandomPickModule({ isFlipped, onFlip, state, setState }) {
     fetchCategories()
   }, [])
 
-  const handlePick = (e) => {
+  const handlePick = async (e) => {
     e.stopPropagation()
     
     if (!selectedCategory) {
@@ -49,16 +51,49 @@ function RandomPickModule({ isFlipped, onFlip, state, setState }) {
 
     // 선택된 카테고리 찾기
     const category = categories.find(c => c.id === parseInt(selectedCategory))
-    if (!category || !category.items || category.items.length === 0) {
-      alert('뽑기 아이템이 없습니다')
+    if (!category) {
+      alert('카테고리를 찾을 수 없습니다')
       setLoading(false)
       return
     }
 
+    let items = []
+
+    // "이름뽑기" 카테고리면 학급 학생 목록 사용
+    if (category.category_name === '이름뽑기') {
+      try {
+        const studentId = localStorage.getItem('studentId')
+        const { grade, classNumber } = parseStudentId(studentId)
+        const classInfo = `${grade}-${classNumber}`
+        
+        const students = await getClassStudents(classInfo)
+        items = students.map(s => s.name)
+        
+        if (items.length === 0) {
+          alert('학급 학생 목록이 없습니다')
+          setLoading(false)
+          return
+        }
+      } catch (error) {
+        console.error('학생 목록 조회 오류:', error)
+        alert('학생 목록을 불러올 수 없습니다')
+        setLoading(false)
+        return
+      }
+    } else {
+      // 일반 카테고리는 기존 아이템 사용
+      if (!category.items || category.items.length === 0) {
+        alert('뽑기 아이템이 없습니다')
+        setLoading(false)
+        return
+      }
+      items = category.items
+    }
+
     // 랜덤 선택 (애니메이션 효과)
     setTimeout(() => {
-      const randomIndex = Math.floor(Math.random() * category.items.length)
-      const pickedItem = category.items[randomIndex]
+      const randomIndex = Math.floor(Math.random() * items.length)
+      const pickedItem = items[randomIndex]
       
       setResult({
         categoryName: category.category_name,

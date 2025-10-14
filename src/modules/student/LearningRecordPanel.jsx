@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../../services/supabaseClient'
+import { incrementPoints } from '../../services/pointService'
 import './LearningRecordPanel.css'
 
 /**
@@ -191,6 +192,15 @@ function LearningRecordPanel() {
       }
 
       setMessage('✅ 배움기록이 제출되었습니다!')
+      
+      // 포인트 1점 자동 추가
+      try {
+        await incrementPoints(studentId, 1)
+        console.log('✅ 배움기록 제출 보상: +1 포인트')
+      } catch (pointError) {
+        console.error('❌ 포인트 추가 실패:', pointError)
+        // 포인트 실패해도 제출은 성공으로 처리
+      }
       
       // 제출 후 입력 필드 비활성화
       setTimeout(() => {

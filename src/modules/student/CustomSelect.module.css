@@ -1,0 +1,122 @@
+/* 커스텀 셀렉트 컨테이너 */
+.customSelect {
+  position: relative;
+  width: 100%;
+}
+
+/* 선택된 값 표시 영역 */
+.selectTrigger {
+  font-family: 'DaHyun', 'Pretendard', sans-serif;
+  font-size: 16px;
+  padding: 12px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  background: white;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+}
+
+.selectTrigger:hover {
+  border-color: #B8D4D9;
+}
+
+/* 선택된 텍스트 */
+.selectedText {
+  font-family: 'DaHyun', 'Pretendard', sans-serif;
+  color: #333;
+}
+
+/* 플레이스홀더 텍스트 */
+.placeholderText {
+  font-family: 'DaHyun', 'Pretendard', sans-serif;
+  color: #999;
+}
+
+/* 화살표 아이콘 회전 */
+.iconRotated {
+  transform: rotate(180deg);
+  transition: transform 0.2s;
+}
+
+/* 드롭다운 옵션 리스트 */
+.optionsList {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: white;
+  border: 2px solid #B8D4D9;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-height: 240px;
+  overflow-y: auto;
+  z-index: 1000;
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 개별 옵션 */
+.option {
+  font-family: 'DaHyun', 'Pretendard', sans-serif;
+  font-size: 16px;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background 0.15s;
+  color: #333;
+}
+
+.option:hover {
+  background: #f5f5f5;
+}
+
+.option:first-child {
+  border-radius: 6px 6px 0 0;
+}
+
+.option:last-child {
+  border-radius: 0 0 6px 6px;
+}
+
+/* 선택된 옵션 */
+.optionSelected {
+  background: #B8D4D9;
+  color: white;
+}
+
+.optionSelected:hover {
+  background: #A0C4C9;
+}
+
+/* 스크롤바 스타일링 */
+.optionsList::-webkit-scrollbar {
+  width: 8px;
+}
+
+.optionsList::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.optionsList::-webkit-scrollbar-thumb {
+  background: #B8D4D9;
+  border-radius: 10px;
+}
+
+.optionsList::-webkit-scrollbar-thumb:hover {
+  background: #A0C4C9;
+}
