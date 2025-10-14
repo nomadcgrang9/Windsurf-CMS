@@ -22,7 +22,8 @@ function MessageBoxModule({ isFlipped, onFlip, state, setState }) {
     try {
       const data = await getLatestUnreadMessage(studentId)
       setMessage(data)
-      setState({ ...state, unreadCount: data ? 1 : 0 })
+      setState(prev => ({ ...prev, unreadCount: data ? 1 : 0 }))
+      console.log('📨 [쪽지 조회 완료]', data ? '안읽은 쪽지 있음' : '안읽은 쪽지 없음')
     } catch (error) {
       console.error('쪽지 조회 실패:', error)
     }
@@ -35,14 +36,36 @@ function MessageBoxModule({ isFlipped, onFlip, state, setState }) {
     fetchLatestMessage()
 
     const channel = subscribeToMyMessages(studentId, (newMessage) => {
+      console.log('📬 [새 쪽지 수신]', newMessage)
       setMessage(newMessage)
-      setState(prev => ({ ...prev, unreadCount: 1 }))
+      setState(prev => {
+        console.log('🔄 [setState 호출 - 새 쪽지]', { prev, new: { ...prev, unreadCount: 1 } })
+        return { ...prev, unreadCount: 1 }
+      })
     })
 
+    // 백업: 10초마다 폴링
+    const pollingInterval = setInterval(() => {
+      console.log('🔄 [폴링 실행 - 쪽지 확인]')
+      fetchLatestMessage()
+    }, 10000)
+
     return () => {
+      console.log('🔌 [Realtime 구독 해제]')
       channel.unsubscribe()
+      clearInterval(pollingInterval)
     }
   }, [studentId])
+
+  // 렌더링 디버깅
+  useEffect(() => {
+    console.log('🎨 [렌더링 정보]', {
+      unreadCount: state.unreadCount,
+      isFlipped: isFlipped,
+      shouldShowBadge: state.unreadCount > 0 && !isFlipped,
+      message: message ? '있음' : '없음'
+    })
+  })
 
   const handleCardClick = (e) => {
     if (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
@@ -58,7 +81,7 @@ function MessageBoxModule({ isFlipped, onFlip, state, setState }) {
     try {
       await markAsRead(message.message_id)
       setMessage(null)
-      setState({ ...state, unreadCount: 0 })
+      setState(prev => ({ ...prev, unreadCount: 0 }))
       setShowDetailModal(false)
     } catch (error) {
       console.error('읽음 처리 실패:', error)
@@ -84,7 +107,7 @@ function MessageBoxModule({ isFlipped, onFlip, state, setState }) {
       await sendReplyToTeacher(studentId, replyContent)
       await markAsRead(message.message_id)
       setMessage(null)
-      setState({ ...state, unreadCount: 0 })
+      setState(prev => ({ ...prev, unreadCount: 0 }))
       setReplyContent('')
       setShowReplyModal(false)
       alert('답장이 전송되었습니다.')
@@ -101,7 +124,7 @@ function MessageBoxModule({ isFlipped, onFlip, state, setState }) {
     try {
       await markAsRead(message.message_id)
       setMessage(null)
-      setState({ ...state, unreadCount: 0 })
+      setState(prev => ({ ...prev, unreadCount: 0 }))
       setReplyContent('')
       setShowReplyModal(false)
     } catch (error) {
@@ -117,7 +140,10 @@ function MessageBoxModule({ isFlipped, onFlip, state, setState }) {
       >
         {/* 뱃지 - 플립 영향 받지 않도록 카드 밖으로 */}
         {state.unreadCount > 0 && !isFlipped && (
-          <div className={styles.badge}>{state.unreadCount}</div>
+          <div className={styles.badge} style={{ background: 'red', color: 'white', zIndex: 1000 }}>
+            {console.log('🔴 [배지 렌더링됨]', state.unreadCount)}
+            {state.unreadCount}
+          </div>
         )}
 
         {/* 앞면 - 기존 구조 유지 */}

@@ -144,20 +144,34 @@ export async function getTeacherReplies() {
  */
 export function subscribeToMyMessages(studentId, callback) {
   const channel = supabase
-    .channel('student_message_notification')
+    .channel(`student_message_${studentId}`)  // 학생별 고유 채널
     .on(
       'postgres_changes',
       {
         event: 'INSERT',
         schema: 'public',
-        table: 'messages',
-        filter: `to_type=eq.student,to_id=eq.${studentId}`
+        table: 'messages'
+        // 필터 제거 - 모든 INSERT 이벤트 수신 후 콜백에서 필터링
       },
       (payload) => {
-        callback(payload.new)
+        console.log('🔔 [Realtime 이벤트 발생]', payload.new)
+        // 콜백에서 필터링
+        if (payload.new.to_type === 'student' && payload.new.to_id === studentId) {
+          console.log('✅ [내 쪽지 맞음]', payload.new)
+          callback(payload.new)
+        } else {
+          console.log('❌ [내 쪽지 아님]', { to_type: payload.new.to_type, to_id: payload.new.to_id, expected: studentId })
+        }
       }
     )
-    .subscribe()
+    .subscribe((status) => {
+      console.log(`🔌 [Realtime 구독 상태 - ${studentId}]`, status)
+      if (status === 'SUBSCRIBED') {
+        console.log('✅ Realtime 구독 성공')
+      } else if (status === 'CHANNEL_ERROR') {
+        console.error('❌ Realtime 구독 실패')
+      }
+    })
 
   return channel
 }
