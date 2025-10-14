@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { getLearningGuide } from '../../services/learningGuideService'
 import { parseStudentId } from '../../utils/formatUtils'
 import styles from './LearningGuideModule.module.css'
@@ -9,6 +9,7 @@ function LearningGuideModule() {
   const [isFlipped, setIsFlipped] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const contentRef = useRef(null)
 
   const fetchLearningGuide = async () => {
     try {
@@ -43,6 +44,53 @@ function LearningGuideModule() {
     const intervalId = setInterval(fetchLearningGuide, 30000)
     return () => clearInterval(intervalId)
   }, [])
+
+  // 스크롤 디버깅 및 강제 활성화
+  useEffect(() => {
+    const element = contentRef.current
+    if (!element) return
+
+    console.log('🔍 [스크롤 디버깅] 요소 정보:', {
+      scrollHeight: element.scrollHeight,
+      clientHeight: element.clientHeight,
+      isScrollable: element.scrollHeight > element.clientHeight,
+      overflowY: window.getComputedStyle(element).overflowY,
+      touchAction: window.getComputedStyle(element).touchAction
+    })
+
+    // 휠 이벤트 리스너 (디버깅 + 강제 스크롤)
+    const handleWheel = (e) => {
+      console.log('🖱️ [휠 이벤트] deltaY:', e.deltaY)
+      e.stopPropagation()
+      element.scrollTop += e.deltaY
+    }
+
+    // 터치 이벤트 리스너 (디버깅)
+    let touchStartY = 0
+    const handleTouchStart = (e) => {
+      touchStartY = e.touches[0].clientY
+      console.log('👆 [터치 시작] Y:', touchStartY)
+    }
+
+    const handleTouchMove = (e) => {
+      const touchY = e.touches[0].clientY
+      const deltaY = touchStartY - touchY
+      console.log('👆 [터치 이동] deltaY:', deltaY)
+      element.scrollTop += deltaY
+      touchStartY = touchY
+      e.preventDefault()
+    }
+
+    element.addEventListener('wheel', handleWheel, { passive: false })
+    element.addEventListener('touchstart', handleTouchStart, { passive: false })
+    element.addEventListener('touchmove', handleTouchMove, { passive: false })
+
+    return () => {
+      element.removeEventListener('wheel', handleWheel)
+      element.removeEventListener('touchstart', handleTouchStart)
+      element.removeEventListener('touchmove', handleTouchMove)
+    }
+  }, [loading])
 
   const handleCardClick = (e) => {
     if (e.target.tagName === 'A') {
@@ -87,7 +135,12 @@ function LearningGuideModule() {
     overflowY: 'auto',
     overflowX: 'hidden',
     flex: 1,
-    paddingRight: '8px'
+    paddingRight: '8px',
+    // 터치 스크롤 및 휠 스크롤 활성화
+    touchAction: 'pan-y',  // 터치 스크롤 명시적 허용
+    WebkitOverflowScrolling: 'touch',  // Chrome/Safari 터치 스크롤 최적화
+    overscrollBehavior: 'contain',  // 스크롤 경계 처리
+    willChange: 'scroll-position'  // 스크롤 성능 최적화
   }
 
   const titleStyle = {
@@ -108,7 +161,7 @@ function LearningGuideModule() {
       {/* 앞면 - 학습안내 */}
       <div className={styles.cardFront}>
         <h3 style={titleStyle}>학습안내</h3>
-        <div style={contentStyle}>
+        <div ref={contentRef} style={contentStyle}>
           {loading ? <div style={{ textAlign: 'center', color: '#999' }}>불러오는 중...</div> : renderContentWithLinks(content)}
         </div>
       </div>
@@ -116,7 +169,7 @@ function LearningGuideModule() {
       {/* 뒷면 - 추가안내 */}
       <div className={styles.cardBack}>
         <h3 style={titleStyle}>추가안내</h3>
-        <div style={contentStyle}>
+        <div ref={contentRef} style={contentStyle}>
           {loading ? <div style={{ textAlign: 'center', color: '#999' }}>불러오는 중...</div> : renderContentWithLinks(additionalContent)}
         </div>
       </div>

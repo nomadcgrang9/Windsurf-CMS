@@ -24,6 +24,7 @@
   box-sizing: border-box;
   background: white;
   border-radius: 12px;
+  transform: translateZ(0); /* GPU 가속 강제, 스크롤 충돌 방지 */
 }
 
 .cardBack {
