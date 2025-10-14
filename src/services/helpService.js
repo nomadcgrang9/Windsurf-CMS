@@ -285,3 +285,34 @@ export const getHelpingStudents = async (classInfo) => {
     throw error
   }
 }
+
+/**
+ * 오늘 고마워 받은 횟수 조회 (포인트 받은 횟수)
+ * @param {string} studentId - 학번
+ * @returns {Promise<number>} 오늘 고마워 받은 횟수
+ */
+export const getTodayThanksCount = async (studentId) => {
+  try {
+    // 오늘 09:00 기준
+    const today = new Date()
+    today.setHours(9, 0, 0, 0)
+    
+    // 현재 시간이 09:00 이전이면 어제 09:00 기준
+    if (new Date().getHours() < 9) {
+      today.setDate(today.getDate() - 1)
+    }
+
+    const { count, error } = await supabase
+      .from('point_transactions')
+      .select('*', { count: 'exact', head: true })
+      .eq('helper_student_id', studentId)
+      .gte('transaction_time', today.toISOString())  // created_at → transaction_time
+
+    if (error) throw error
+
+    return count || 0
+  } catch (error) {
+    console.error('❌ 오늘 고마워 횟수 조회 실패:', error.message)
+    return 0 // 에러 시 0 반환 (사용자 경험 우선)
+  }
+}

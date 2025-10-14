@@ -44,16 +44,9 @@ function MessageBoxModule({ isFlipped, onFlip, state, setState }) {
       })
     })
 
-    // 백업: 10초마다 폴링
-    const pollingInterval = setInterval(() => {
-      console.log('🔄 [폴링 실행 - 쪽지 확인]')
-      fetchLatestMessage()
-    }, 10000)
-
     return () => {
       console.log('🔌 [Realtime 구독 해제]')
       channel.unsubscribe()
-      clearInterval(pollingInterval)
     }
   }, [studentId])
 

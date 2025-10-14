@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { getMyActiveRequest, getHelpingStudents, completeHelp } from '../../services/helpService'
+import { getMyActiveRequest, getHelpingStudents, completeHelp, getTodayThanksCount } from '../../services/helpService'
 import { parseStudentId } from '../../utils/formatUtils'
 import { getDailyPoints } from '../../services/pointService'
 import { supabase } from '../../services/supabaseClient'
@@ -108,7 +108,10 @@ function HelpThanksButton() {
 
     setLoading(true)
     try {
-      // 도와준 학생의 포인트 확인
+      // 1. 도와준 학생의 오늘 고마워 받은 횟수 확인
+      const thanksCount = await getTodayThanksCount(selectedStudent)
+      
+      // 2. 도와준 학생의 포인트 한도 확인
       const points = await getDailyPoints(selectedStudent)
       if (points.current_points >= 20) {
         alert('선택한 학생이 이미 포인트 한도에 도달했습니다.')
@@ -116,14 +119,20 @@ function HelpThanksButton() {
         return
       }
 
-      // 포인트 지급 및 요청 종료 (도와준 내용 포함)
+      // 3. 포인트 지급 및 요청 종료 (도와준 내용 포함)
       await completeHelp(studentId, selectedStudent, helpDescription.trim())
       
       setShowModal(false)
       setMyStatus(null)
       setSelectedStudent(null)
       setHelpDescription('')
-      alert('포인트가 지급되었습니다!')
+      
+      // 4. 3회 달성 체크 및 메시지
+      if (thanksCount >= 2) {  // 이번이 3회째
+        alert('포인트가 지급되었습니다!\n\n도와준 학생이 오늘 3회 한도를 달성했습니다.')
+      } else {
+        alert('포인트가 지급되었습니다!')
+      }
     } catch (error) {
       console.error('포인트 지급 오류:', error)
       alert('포인트 지급 중 오류가 발생했습니다.')

@@ -78,13 +78,11 @@ function HelpNeedButton() {
         // 이미 활성화 → 취소
         await cancelHelpRequest(studentId)
         setMyStatus(null)
-      } else if (myStatus === null) {
-        // 중립 상태 → 활성화
+      } else {
+        // 중립 또는 helping 상태 → 활성화
+        // (도와줄게 상태여도 도와줄래 가능)
         await createHelpRequest(studentId, 'requesting')
         setMyStatus('requesting')
-      } else {
-        // 다른 상태(helping) → 경고
-        alert('이미 다른 상태가 활성화되어 있습니다.')
       }
     } catch (error) {
       console.error('도움 요청 오류:', error)
@@ -99,10 +97,10 @@ function HelpNeedButton() {
       <button
         className="help-system-button"
         onClick={handleClick}
-        disabled={loading || (myStatus !== null && myStatus !== 'requesting')}
+        disabled={loading}
         style={{
-          opacity: myStatus !== null && myStatus !== 'requesting' ? 0.5 : 1,
-          cursor: loading ? 'wait' : (myStatus !== null && myStatus !== 'requesting' ? 'not-allowed' : 'pointer')
+          opacity: loading ? 0.5 : 1,
+          cursor: loading ? 'wait' : 'pointer'
         }}
       >
         <img src="/characters/q-help.png" alt="도와줄래?" className="help-icon" />
