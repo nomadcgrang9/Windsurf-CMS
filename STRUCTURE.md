@@ -1815,5 +1815,240 @@ class-management-system/
 - ✅ 재시도 버튼으로 UX 개선 완료
 
 ---
-**마지막 업데이트**: 2025-10-04 20:37
-**업데이트 내용**: Gemini API 최종 최적화 - 2.0 Flash 전환으로 토큰 효율 85% 향상
+
+### 2025-10-14 22:00 - 친구 투표 시스템 타이머 제거 및 안정화
+
+**문제**: 타이머 기능이 UTC/로컬 시간 혼동으로 불안정
+
+**해결 방안**: 타이머 완전 제거, 교사 수동 제어로 전환
+
+**변경 사항**:
+
+1. **데이터베이스**:
+   ```sql
+   ALTER TABLE vote_sessions 
+   ALTER COLUMN time_limit_minutes DROP NOT NULL;
+   ```
+
+2. **voteService.js**:
+   - `startVoteSession()` 함수에서 `timeLimitMinutes` 파라미터 제거
+   - `time_limit_minutes: null`로 설정
+
+3. **관리자 페이지** (`FriendVoteManagement.jsx`):
+   - 시간 입력 UI 완전 제거
+   - 안내 문구 변경: "적절한 시간 후 종료 버튼을 눌러주세요"
+
+4. **학생 페이지** (`FriendVoteModal.jsx`):
+   - 타이머 관련 state 제거 (`remainingTime`)
+   - 타이머 계산 useEffect 완전 삭제
+   - 타이머 UI 제거
+   - `formatTime()` 함수 제거
+
+**장점**:
+- ✅ 타임존 문제 완전 해결
+- ✅ 교사가 상황에 맞게 유연하게 시간 조절 가능
+- ✅ 코드 복잡도 감소
+- ✅ 버그 발생 가능성 대폭 감소
+
+---
+
+### 2025-10-14 22:30 - 뽑기 관리 수정/삭제 기능 개선
+
+**문제**: 수정/삭제 버튼 클릭 시 반응 없음
+
+**해결**:
+
+1. **수정 기능** (`AdminRandomPickTab.jsx`):
+   ```javascript
+   const startEdit = (category) => {
+     console.log('🔧 수정 시작:', category)
+     setEditingCategory(category)
+     setEditCategoryName(category.category_name)
+     setEditItems([...category.items])
+     setAccordions(prev => ({ ...prev, edit: true }))
+     
+     // 수정 폼으로 자동 스크롤
+     setTimeout(() => {
+       const editForm = document.querySelector('.edit-form')
+       if (editForm) {
+         editForm.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+       }
+     }, 100)
+   }
+   ```
+
+2. **삭제 기능**:
+   ```javascript
+   const deleteCategory = async (id) => {
+     console.log('🗑️ 삭제 시작:', id)
+     if (!confirm('정말 삭제하시겠습니까?')) return
+
+     const { error } = await supabase
+       .from('random_pick_categories')
+       .delete()
+       .eq('id', id)
+
+     if (!error) {
+       console.log('✅ 삭제 성공')
+       alert('삭제되었습니다')
+       // 즉시 상태에서 제거
+       setCategories(prev => prev.filter(cat => cat.id !== id))
+       // DB에서 다시 조회
+       await fetchCategories()
+     }
+   }
+   ```
+
+3. **fetchCategories 디버깅 로그 추가**:
+   ```javascript
+   const fetchCategories = async () => {
+     console.log('📋 카테고리 목록 조회 중...')
+     const { data, error } = await supabase
+       .from('random_pick_categories')
+       .select('*')
+       .order('created_at', { ascending: false })
+     
+     if (!error) {
+       console.log('✅ 조회 성공:', data)
+       setCategories(data || [])
+     }
+   }
+   ```
+
+**개선 사항**:
+- ✅ 수정 폼 자동 스크롤로 UX 개선
+- ✅ 삭제 즉시 화면 반영
+- ✅ 콘솔 로그로 디버깅 용이
+
+---
+
+### 2025-10-14 23:00 - 이름뽑기 자동 연동 기능 구현
+
+**요구사항**: 학급별 학생 이름 자동 뽑기 기능
+
+**구현 방법**: 카테고리 이름 기반 조건부 처리
+
+**변경 사항** (`RandomPickModule.jsx`):
+
+```javascript
+import { getClassStudents } from '../../services/studentService'
+import { parseStudentId } from '../../utils/formatUtils'
+
+const handlePick = async (e) => {
+  // ... 기존 코드
+  
+  let items = []
+
+  // "이름뽑기" 카테고리면 학급 학생 목록 사용
+  if (category.category_name === '이름뽑기') {
+    try {
+      const studentId = localStorage.getItem('studentId')
+      const { grade, classNumber } = parseStudentId(studentId)
+      const classInfo = `${grade}-${classNumber}`
+      
+      const students = await getClassStudents(classInfo)
+      items = students.map(s => s.name)
+      
+      if (items.length === 0) {
+        alert('학급 학생 목록이 없습니다')
+        return
+      }
+    } catch (error) {
+      console.error('학생 목록 조회 오류:', error)
+      alert('학생 목록을 불러올 수 없습니다')
+      return
+    }
+  } else {
+    // 일반 카테고리는 기존 아이템 사용
+    items = category.items
+  }
+
+  // 랜덤 선택
+  const randomIndex = Math.floor(Math.random() * items.length)
+  const pickedItem = items[randomIndex]
+  
+  setResult({
+    categoryName: category.category_name,
+    item: pickedItem
+  })
+}
+```
+
+**사용 방법**:
+1. 관리자 페이지에서 카테고리 생성
+   - 카테고리 이름: `이름뽑기`
+   - 아이템: 더미 데이터 입력 (실제로는 사용 안 됨)
+2. 학생 페이지에서 "이름뽑기" 선택 → 뽑기
+3. 자동으로 해당 학급 학생 이름 중 랜덤 선택
+
+**동작 방식**:
+- 4-1반 학생 로그인 → "이름뽑기" → 4-1반 학생 중 랜덤
+- 5-2반 학생 로그인 → "이름뽑기" → 5-2반 학생 중 랜덤
+
+---
+
+### 2025-10-14 23:10 - 도움완료 문구 변경
+
+**변경 내용** (`HelpGiveButton.jsx`):
+
+```javascript
+// 변경 전
+{todayThanksCount >= MAX_DAILY_HELPS ? '오늘 한도 달성 ✓' : '도와줄게!'}
+
+// 변경 후
+{todayThanksCount >= MAX_DAILY_HELPS ? '도움완료' : '도와줄게!'}
+```
+
+**이유**: 더 간결하고 직관적인 표현
+
+---
+
+### 2025-10-15 11:15 - 배움기록 제출 시 포인트 자동 추가
+
+**요구사항**: 배움기록 제출 시 자동으로 1포인트 추가
+
+**구현** (`LearningRecordPanel.jsx`):
+
+```javascript
+import { incrementPoints } from '../../services/pointService'
+
+const handleSubmit = async () => {
+  // ... 배움기록 저장 로직
+  
+  if (!error) {
+    setMessage('✅ 배움기록이 제출되었습니다!')
+    
+    // 포인트 1점 자동 추가
+    try {
+      await incrementPoints(studentId, 1)
+      console.log('✅ 배움기록 제출 보상: +1 포인트')
+    } catch (pointError) {
+      console.error('❌ 포인트 추가 실패:', pointError)
+      // 포인트 실패해도 제출은 성공으로 처리
+    }
+    
+    // 화면 새로고침
+    setTimeout(() => {
+      fetchTodayRecord(studentId)
+    }, 1000)
+  }
+}
+```
+
+**특징**:
+- ✅ 하루 1회 제출 제한 → 포인트도 하루 1회만
+- ✅ 포인트 실패해도 배움기록 제출은 성공 처리 (안전성)
+- ✅ 콘솔 로그로 디버깅 용이
+- ✅ 기존 `incrementPoints()` 함수 재사용
+
+**동작 흐름**:
+1. 학생이 배움기록 작성
+2. [제출하기] 버튼 클릭
+3. 배움기록 DB 저장 성공
+4. 자동으로 포인트 +1
+5. 성공 메시지 표시
+
+---
+
+**마지막 업데이트**: 2025-10-15 12:08
+**업데이트 내용**: 친구 투표 타이머 제거, 뽑기 관리 개선, 이름뽑기 자동 연동, 배움기록 포인트 자동 추가
