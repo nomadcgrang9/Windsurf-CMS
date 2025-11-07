@@ -83,6 +83,22 @@ function HelpThanksButton() {
         return
       }
 
+      // 🎯 고마워 버튼 클릭 시 즉시 DB 업데이트 (다른 학생들의 알림판에 즉시 반영)
+      const { error: updateError } = await supabase
+        .from('help_requests')
+        .update({ is_active: false })
+        .eq('student_id', studentId)
+        .eq('is_active', true)
+      
+      if (updateError) {
+        console.error('❌ 도움 요청 비활성화 실패:', updateError)
+        alert('상태 업데이트에 실패했습니다.')
+        return
+      }
+
+      // 로컬 상태도 즉시 업데이트
+      setMyStatus(null)
+      
       setHelpingStudents(students)
       setShowModal(true)
     } catch (error) {
@@ -120,10 +136,11 @@ function HelpThanksButton() {
       }
 
       // 3. 포인트 지급 및 요청 종료 (도와준 내용 포함)
-      await completeHelp(studentId, selectedStudent, helpDescription.trim())
+      // studentId: 고마워 버튼 누른 학생 (도와준 학생)
+      // selectedStudent: 선택한 학생 (도움 받은 학생)
+      await completeHelp(selectedStudent, studentId, helpDescription.trim())
       
       setShowModal(false)
-      setMyStatus(null)
       setSelectedStudent(null)
       setHelpDescription('')
       

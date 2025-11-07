@@ -25,12 +25,16 @@ export const loginStudent = async (studentId, name) => {
   try {
     // 1. 입력 검증
     if (!validateStudentId(studentId)) {
+      console.warn('❌ 학번 형식 오류:', studentId)
       return { success: false, error: '올바른 학번 형식이 아닙니다. (4자리 숫자)' }
     }
     
     if (!validateName(name)) {
+      console.warn('❌ 이름 입력 오류:', name)
       return { success: false, error: '이름을 입력해주세요.' }
     }
+    
+    console.log('🔍 학생 조회 시작:', { studentId, name })
     
     // 2. 학생 정보 조회
     const { data: student, error: studentError } = await supabase
@@ -40,7 +44,31 @@ export const loginStudent = async (studentId, name) => {
       .eq('name', name.trim())
       .single()
     
-    if (studentError || !student) {
+    console.log('📊 조회 결과:', {
+      success: !studentError && !!student,
+      studentData: student,
+      error: studentError ? {
+        code: studentError.code,
+        message: studentError.message,
+        details: studentError.details,
+        hint: studentError.hint
+      } : null
+    })
+    
+    if (studentError) {
+      console.error('❌ 학생 조회 오류:', {
+        code: studentError.code,
+        message: studentError.message,
+        details: studentError.details,
+        hint: studentError.hint,
+        studentId,
+        name
+      })
+      return { success: false, error: '학번 또는 이름이 일치하지 않습니다.' }
+    }
+    
+    if (!student) {
+      console.warn('⚠️ 학생 데이터 없음:', { studentId, name })
       return { success: false, error: '학번 또는 이름이 일치하지 않습니다.' }
     }
     
