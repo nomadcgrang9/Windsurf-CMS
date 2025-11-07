@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { createHelpRequest, cancelHelpRequest, getMyActiveRequest, getTodayThanksCount } from '../../services/helpService'
+import { createHelpRequest, cancelHelpRequest, getMyActiveRequest, getTodayThanksCount, checkHelpCooldown } from '../../services/helpService'
 import { supabase } from '../../services/supabaseClient'
 
 /**
@@ -13,6 +13,8 @@ function HelpGiveButton() {
   const [loading, setLoading] = useState(false)
   const [todayThanksCount, setTodayThanksCount] = useState(0)
   const [showLimitModal, setShowLimitModal] = useState(false)
+  const [isInCooldown, setIsInCooldown] = useState(false)
+  const [remainingSeconds, setRemainingSeconds] = useState(0)
   
   const MAX_DAILY_HELPS = 3
 
@@ -28,6 +30,12 @@ function HelpGiveButton() {
       // 오늘 고마워 받은 횟수 조회
       const count = await getTodayThanksCount(studentId)
       setTodayThanksCount(count)
+
+      // 🎯 쿨타임 확인
+      const cooldown = await checkHelpCooldown(studentId)
+      console.log('🎯 [HelpGiveButton] 쿨타임 상태:', cooldown)
+      setIsInCooldown(cooldown.isInCooldown)
+      setRemainingSeconds(cooldown.remainingSeconds)
     } catch (error) {
       console.error('상태 확인 오류:', error)
     }
@@ -61,6 +69,23 @@ function HelpGiveButton() {
     }
   }, [])
 
+  // 🎯 쿨타임 카운트다운
+  useEffect(() => {
+    if (!isInCooldown || remainingSeconds <= 0) return
+
+    const timer = setInterval(() => {
+      setRemainingSeconds(prev => {
+        if (prev <= 1) {
+          setIsInCooldown(false)
+          return 0
+        }
+        return prev - 1
+      })
+    }, 1000)
+
+    return () => clearInterval(timer)
+  }, [isInCooldown, remainingSeconds])
+
   // 도와줄게! 토글 (클릭할 때마다 활성화/취소)
   const handleClick = async () => {
     if (loading) return
@@ -68,6 +93,12 @@ function HelpGiveButton() {
     const studentId = localStorage.getItem('studentId')
     if (!studentId) {
       alert('로그인 정보를 찾을 수 없습니다.')
+      return
+    }
+
+    // 🎯 쿨타임 체크
+    if (isInCooldown) {
+      alert(`도와줄게로 포인트를 받으면 10분간은 도와줄게를 누를 수 없습니다.\n남은 시간: ${remainingSeconds}초`)
       return
     }
 
@@ -99,7 +130,7 @@ function HelpGiveButton() {
     }
   }
 
-  const isDisabled = loading || (myStatus !== null && myStatus !== 'helping') || todayThanksCount >= MAX_DAILY_HELPS
+  const isDisabled = loading || (myStatus !== null && myStatus !== 'helping') || todayThanksCount >= MAX_DAILY_HELPS || isInCooldown
 
   return (
     <>
@@ -115,9 +146,13 @@ function HelpGiveButton() {
         >
           <img src="/characters/a-help.png" alt="도와줄게!" className="help-icon" />
           <div style={{ marginTop: '8px' }}>
-            {todayThanksCount >= MAX_DAILY_HELPS ? '도움완료' : '도와줄게!'}
+            {isInCooldown ? '쉬는중' : (todayThanksCount >= MAX_DAILY_HELPS ? '도움완료' : '도와줄게!')}
           </div>
-          {todayThanksCount > 0 && todayThanksCount < MAX_DAILY_HELPS && (
+          {isInCooldown ? (
+            <div style={{ fontSize: '11px', color: '#ff6b6b', marginTop: '4px' }}>
+              {remainingSeconds}초 후
+            </div>
+          ) : todayThanksCount > 0 && todayThanksCount < MAX_DAILY_HELPS && (
             <div style={{ fontSize: '11px', color: '#999', marginTop: '4px' }}>
               {todayThanksCount}/{MAX_DAILY_HELPS}회
             </div>

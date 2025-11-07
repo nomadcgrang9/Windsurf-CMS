@@ -17,6 +17,8 @@ function HelpThanksButton() {
   const [selectedStudent, setSelectedStudent] = useState(null)
   const [helpDescription, setHelpDescription] = useState('') // 도와준 내용
   const [loading, setLoading] = useState(false)
+  const [showPointModal, setShowPointModal] = useState(false) // 포인트 지급 모달
+  const [pointModalType, setPointModalType] = useState('loading') // 'loading' | 'success'
 
   // 내 상태 확인
   const checkMyStatus = async () => {
@@ -135,23 +137,34 @@ function HelpThanksButton() {
         return
       }
 
-      // 3. 포인트 지급 및 요청 종료 (도와준 내용 포함)
-      // studentId: 고마워 버튼 누른 학생 (도와준 학생)
-      // selectedStudent: 선택한 학생 (도움 받은 학생)
-      await completeHelp(selectedStudent, studentId, helpDescription.trim())
-      
+      // 🎯 선택 모달 닫고 로딩 모달 표시
       setShowModal(false)
-      setSelectedStudent(null)
-      setHelpDescription('')
+      setShowPointModal(true)
+      setPointModalType('loading')
+
+      // 3. 포인트 지급 및 요청 종료 (도와준 내용 포함)
+      // studentId: 고마워 버튼 누른 학생 = 도움 받은 학생 (3101 고유원)
+      // selectedStudent: 선택한 학생 = 도와준 학생 (3102 김지성)
+      // completeHelp(도움받은학생, 도와준학생, 내용)
+      await completeHelp(studentId, selectedStudent, helpDescription.trim())
       
-      // 4. 3회 달성 체크 및 메시지
-      if (thanksCount >= 2) {  // 이번이 3회째
-        alert('포인트가 지급되었습니다!\n\n도와준 학생이 오늘 3회 한도를 달성했습니다.')
-      } else {
-        alert('포인트가 지급되었습니다!')
-      }
+      // 4. 성공 모달 표시
+      setPointModalType('success')
+      
+      // 5. 2초 후 자동 닫기
+      setTimeout(() => {
+        setShowPointModal(false)
+        setSelectedStudent(null)
+        setHelpDescription('')
+        
+        // 6. 3회 달성 체크 및 메시지
+        if (thanksCount >= 2) {  // 이번이 3회째
+          alert('포인트가 지급되었습니다!\n\n도와준 학생이 오늘 3회 한도를 달성했습니다.')
+        }
+      }, 2000)
     } catch (error) {
       console.error('포인트 지급 오류:', error)
+      setShowPointModal(false)
       alert('포인트 지급 중 오류가 발생했습니다.')
     } finally {
       setLoading(false)
@@ -351,6 +364,89 @@ function HelpThanksButton() {
                 {loading ? '처리 중...' : '확인'}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* 포인트 지급 모달 */}
+      {showPointModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1001
+        }}>
+          <div style={{
+            background: 'white',
+            borderRadius: '16px',
+            padding: '40px',
+            maxWidth: '350px',
+            width: '90%',
+            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.2)',
+            textAlign: 'center'
+          }}>
+            {pointModalType === 'loading' ? (
+              <>
+                <h3 style={{
+                  fontFamily: "'DaHyun', 'Pretendard', sans-serif",
+                  fontSize: '22px',
+                  fontWeight: 700,
+                  color: '#333',
+                  marginBottom: '24px'
+                }}>
+                  포인트 지급 중...
+                </h3>
+                <div style={{
+                  width: '60px',
+                  height: '60px',
+                  border: '4px solid #E0E0E0',
+                  borderTop: '4px solid #B8D4D9',
+                  borderRadius: '50%',
+                  margin: '0 auto 20px',
+                  animation: 'spin 1s linear infinite'
+                }} />
+                <p style={{
+                  fontFamily: "'DaHyun', 'Pretendard', sans-serif",
+                  fontSize: '16px',
+                  color: '#666',
+                  lineHeight: '1.6'
+                }}>
+                  잠시만 기다려주세요.<br />
+                  포인트가 반영되고 있습니다.
+                </p>
+                <style>{`
+                  @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                  }
+                `}</style>
+              </>
+            ) : (
+              <>
+                <h3 style={{
+                  fontFamily: "'DaHyun', 'Pretendard', sans-serif",
+                  fontSize: '22px',
+                  fontWeight: 700,
+                  color: '#333',
+                  marginBottom: '12px'
+                }}>
+                  포인트가 지급되었습니다!
+                </h3>
+                <p style={{
+                  fontFamily: "'DaHyun', 'Pretendard', sans-serif",
+                  fontSize: '14px',
+                  color: '#999'
+                }}>
+                  (2초 후 자동 닫기)
+                </p>
+              </>
+            )}
           </div>
         </div>
       )}

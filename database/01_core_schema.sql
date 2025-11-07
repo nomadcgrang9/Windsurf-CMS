@@ -34,6 +34,7 @@ CREATE TABLE IF NOT EXISTS help_requests (
   status TEXT NOT NULL CHECK (status IN ('requesting', 'helping')),
   is_active BOOLEAN DEFAULT true,
   started_at TIMESTAMPTZ DEFAULT NOW(),
+  cooldown_until TIMESTAMPTZ,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(student_id, is_active)
