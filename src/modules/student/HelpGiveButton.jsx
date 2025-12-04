@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react'
 import { createHelpRequest, cancelHelpRequest, getMyActiveRequest, getTodayThanksCount, checkHelpCooldown } from '../../services/helpService'
 import { supabase } from '../../services/supabaseClient'
+import { getHelpSettingsByStudentId, DEFAULT_SETTINGS } from '../../services/helpSettingsService'
 
 /**
  * 도와줄게! 버튼
  * - Column 4 (21%, 하단 25%)
  * - 도움 제공 버튼
  * - - 버튼으로 취소 가능
+ * - 🎯 일일 제한 횟수는 help_settings 테이블에서 조회
  */
 function HelpGiveButton() {
   const [myStatus, setMyStatus] = useState(null)
@@ -15,8 +17,9 @@ function HelpGiveButton() {
   const [showLimitModal, setShowLimitModal] = useState(false)
   const [isInCooldown, setIsInCooldown] = useState(false)
   const [remainingSeconds, setRemainingSeconds] = useState(0)
-  
-  const MAX_DAILY_HELPS = 3
+
+  // 🎯 하드코딩 제거: DB에서 조회한 일일 제한 값 사용
+  const [dailyLimit, setDailyLimit] = useState(DEFAULT_SETTINGS.daily_limit)
 
   // 내 상태 확인
   const checkMyStatus = async () => {
@@ -26,7 +29,7 @@ function HelpGiveButton() {
 
       const request = await getMyActiveRequest(studentId)
       setMyStatus(request?.status || null)
-      
+
       // 오늘 고마워 받은 횟수 조회
       const count = await getTodayThanksCount(studentId)
       setTodayThanksCount(count)
@@ -36,6 +39,11 @@ function HelpGiveButton() {
       console.log('🎯 [HelpGiveButton] 쿨타임 상태:', cooldown)
       setIsInCooldown(cooldown.isInCooldown)
       setRemainingSeconds(cooldown.remainingSeconds)
+
+      // 🎯 일일 제한 설정 조회 (DB에서)
+      const settings = await getHelpSettingsByStudentId(studentId)
+      console.log('🎯 [HelpGiveButton] 도움 설정:', settings)
+      setDailyLimit(settings?.daily_limit || DEFAULT_SETTINGS.daily_limit)
     } catch (error) {
       console.error('상태 확인 오류:', error)
     }
@@ -102,8 +110,8 @@ function HelpGiveButton() {
       return
     }
 
-    // 3회 제한 체크
-    if (todayThanksCount >= MAX_DAILY_HELPS && myStatus !== 'helping') {
+    // 일일 제한 체크 (DB에서 조회한 dailyLimit 사용)
+    if (todayThanksCount >= dailyLimit && myStatus !== 'helping') {
       setShowLimitModal(true)
       return
     }
@@ -130,7 +138,7 @@ function HelpGiveButton() {
     }
   }
 
-  const isDisabled = loading || (myStatus !== null && myStatus !== 'helping') || todayThanksCount >= MAX_DAILY_HELPS || isInCooldown
+  const isDisabled = loading || (myStatus !== null && myStatus !== 'helping') || todayThanksCount >= dailyLimit || isInCooldown
 
   return (
     <>
@@ -146,15 +154,15 @@ function HelpGiveButton() {
         >
           <img src="/characters/a-help.png" alt="도와줄게!" className="help-icon" />
           <div style={{ marginTop: '8px' }}>
-            {isInCooldown ? '쉬는중' : (todayThanksCount >= MAX_DAILY_HELPS ? '도움완료' : '도와줄게!')}
+            {isInCooldown ? '쉬는중' : (todayThanksCount >= dailyLimit ? '도움완료' : '도와줄게!')}
           </div>
           {isInCooldown ? (
             <div style={{ fontSize: '11px', color: '#ff6b6b', marginTop: '4px' }}>
               {remainingSeconds}초 후
             </div>
-          ) : todayThanksCount > 0 && todayThanksCount < MAX_DAILY_HELPS && (
+          ) : todayThanksCount > 0 && todayThanksCount < dailyLimit && (
             <div style={{ fontSize: '11px', color: '#999', marginTop: '4px' }}>
-              {todayThanksCount}/{MAX_DAILY_HELPS}회
+              {todayThanksCount}/{dailyLimit}회
             </div>
           )}
         </button>
@@ -203,8 +211,8 @@ function HelpGiveButton() {
               lineHeight: '1.6',
               marginBottom: '24px'
             }}>
-              오늘의 도와주기 한도를 3회 충족했습니다.<br />
-              내일 다시 친구들을 도와주세요! 😊
+              오늘의 도와주기 한도를 {dailyLimit}회 충족했습니다.<br />
+              내일 다시 친구들을 도와주세요!
             </p>
             <button
               onClick={() => setShowLimitModal(false)}

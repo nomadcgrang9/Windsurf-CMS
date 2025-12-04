@@ -1,10 +1,12 @@
 import { supabase } from './supabaseClient'
 import { incrementPoints } from './pointService'
+import { getHelpSettingsByStudentId, DEFAULT_SETTINGS } from './helpSettingsService'
 
 /**
  * 도움 시스템 서비스
  * - help_requests 테이블 CRUD
  * - 도움 요청/응답/완료 처리
+ * - 쿨타임 및 일일 제한은 help_settings 테이블에서 조회
  */
 
 /**
@@ -156,10 +158,14 @@ export const completeHelp = async (requestingStudentId, helpingStudentId, helpDe
 
     if (updateError) throw updateError
 
-    // 4. 도와준 학생의 "도와줄게!" 상태 비활성화 + 10분 쿨타임 설정
-    const cooldownUntil = new Date(Date.now() + 10 * 60 * 1000) // 10분 후
+    // 4. 도와준 학생의 "도와줄게!" 상태 비활성화 + 쿨타임 설정 (DB에서 조회)
+    // 🎯 하드코딩 제거: help_settings 테이블에서 쿨타임 값 조회
+    const settings = await getHelpSettingsByStudentId(helpingStudentId)
+    const cooldownSeconds = settings?.cooldown_seconds || DEFAULT_SETTINGS.cooldown_seconds
+    const cooldownUntil = new Date(Date.now() + cooldownSeconds * 1000) // 초 → 밀리초
     console.log('🎯 쿨타임 설정 시도:', {
       helpingStudentId,
+      cooldownSeconds,
       cooldownUntil: cooldownUntil.toISOString(),
       timestamp: new Date().toISOString()
     })

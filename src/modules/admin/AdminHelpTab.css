@@ -271,3 +271,326 @@
   color: #999;
   cursor: not-allowed;
 }
+
+/* ===== 도움설정 섹션 ===== */
+
+/* 대상 선택 박스 */
+.settings-target-box {
+  background: #F9F9F9;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.settings-target-box h4 {
+  margin: 0 0 12px 0;
+  font-size: 16px;
+  color: #333;
+}
+
+.settings-input-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.settings-input {
+  flex: 1;
+  padding: 12px;
+  font-size: 14px;
+  border: 2px solid #E0E0E0;
+  border-radius: 6px;
+}
+
+.settings-input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.settings-query-btn {
+  padding: 12px 24px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.settings-query-btn:hover:not(:disabled) {
+  background: #5568d3;
+}
+
+.settings-query-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.settings-hint {
+  margin: 0;
+  font-size: 13px;
+  color: #888;
+}
+
+/* 조회 결과 박스 */
+.settings-result-box {
+  border: 1px solid #E0E0E0;
+  border-radius: 8px;
+  padding: 20px;
+  background: white;
+}
+
+.settings-result-box h4 {
+  margin: 0 0 20px 0;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #E0E0E0;
+  font-size: 16px;
+  color: #333;
+}
+
+/* 일괄 변경 박스 */
+.batch-apply-box {
+  background: #F0F4FF;
+  border: 2px solid #667eea;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.batch-apply-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.batch-apply-header > span:first-child {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.batch-apply-desc {
+  font-size: 13px;
+  color: #666;
+}
+
+.batch-apply-inputs {
+  display: flex;
+  gap: 20px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.batch-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.batch-input-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #555;
+}
+
+.batch-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.batch-input {
+  width: 80px;
+  padding: 10px;
+  font-size: 14px;
+  border: 2px solid #E0E0E0;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.batch-input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.batch-unit {
+  font-size: 14px;
+  color: #666;
+}
+
+.batch-apply-btn {
+  padding: 10px 20px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.batch-apply-btn:hover {
+  background: #5568d3;
+}
+
+.batch-hint {
+  margin: 12px 0 0 0;
+  font-size: 12px;
+  color: #888;
+}
+
+/* 개별 설정 박스 */
+.individual-settings-box {
+  margin-top: 20px;
+}
+
+.individual-settings-box h5 {
+  margin: 0 0 16px 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #E0E0E0;
+  font-size: 15px;
+  color: #333;
+}
+
+/* 학년별 아코디언 */
+.grade-accordion-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.grade-accordion {
+  border: 1px solid #E0E0E0;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.grade-accordion-toggle {
+  width: 100%;
+  padding: 12px 16px;
+  background: #F5F5F5;
+  border: none;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.grade-accordion-toggle:hover {
+  background: #E8E8E8;
+}
+
+.grade-accordion-content {
+  padding: 16px;
+  background: white;
+}
+
+/* 설정 테이블 */
+.settings-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.settings-table th,
+.settings-table td {
+  padding: 12px;
+  text-align: center;
+  border-bottom: 1px solid #E0E0E0;
+}
+
+.settings-table th {
+  background: #F5F5F5;
+  font-weight: 600;
+  color: #333;
+}
+
+.settings-table th:first-child,
+.settings-table td:first-child {
+  text-align: left;
+}
+
+.class-label-cell {
+  font-weight: 600;
+  color: #333;
+}
+
+.table-input-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.table-input {
+  width: 70px;
+  padding: 8px;
+  font-size: 14px;
+  border: 2px solid #E0E0E0;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.table-input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.table-format-hint {
+  font-size: 11px;
+  color: #888;
+  white-space: nowrap;
+}
+
+.table-save-btn {
+  padding: 6px 14px;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.table-save-btn:hover {
+  background: #43A047;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .batch-apply-inputs {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .batch-input-group {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .batch-apply-btn {
+    width: 100%;
+    margin-top: 8px;
+  }
+
+  .settings-table {
+    font-size: 12px;
+  }
+
+  .table-input {
+    width: 50px;
+    padding: 6px;
+  }
+
+  .table-format-hint {
+    display: none;
+  }
+}
