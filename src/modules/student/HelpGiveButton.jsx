@@ -43,7 +43,7 @@ function HelpGiveButton() {
       // 🎯 일일 제한 설정 조회 (DB에서)
       const settings = await getHelpSettingsByStudentId(studentId)
       console.log('🎯 [HelpGiveButton] 도움 설정:', settings)
-      setDailyLimit(settings?.daily_limit || DEFAULT_SETTINGS.daily_limit)
+      setDailyLimit(settings?.daily_limit ?? DEFAULT_SETTINGS.daily_limit)
     } catch (error) {
       console.error('상태 확인 오류:', error)
     }

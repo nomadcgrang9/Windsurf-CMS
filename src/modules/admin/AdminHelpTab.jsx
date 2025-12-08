@@ -355,8 +355,8 @@ function AdminHelpTab() {
       // 🎯 DB에 일괄 저장
       const result = await saveBatchSettings(
         classesToUpdate,
-        cooldownValue !== null ? cooldownValue : settingsResult.classes[0]?.cooldown_seconds || DEFAULT_SETTINGS.cooldown_seconds,
-        dailyLimitValue !== null ? dailyLimitValue : settingsResult.classes[0]?.daily_limit || DEFAULT_SETTINGS.daily_limit
+        cooldownValue !== null ? cooldownValue : settingsResult.classes[0]?.cooldown_seconds ?? DEFAULT_SETTINGS.cooldown_seconds,
+        dailyLimitValue !== null ? dailyLimitValue : settingsResult.classes[0]?.daily_limit ?? DEFAULT_SETTINGS.daily_limit
       )
 
       if (result.success) {
