@@ -162,20 +162,28 @@ export const completeHelp = async (requestingStudentId, helpingStudentId, helpDe
     // 🎯 하드코딩 제거: help_settings 테이블에서 쿨타임 값 조회
     const settings = await getHelpSettingsByStudentId(helpingStudentId)
     const cooldownSeconds = settings?.cooldown_seconds || DEFAULT_SETTINGS.cooldown_seconds
-    const cooldownUntil = new Date(Date.now() + cooldownSeconds * 1000) // 초 → 밀리초
-    console.log('🎯 쿨타임 설정 시도:', {
+
+    console.log('🎯 쿨타임 설정 조회:', {
       helpingStudentId,
       cooldownSeconds,
-      cooldownUntil: cooldownUntil.toISOString(),
       timestamp: new Date().toISOString()
     })
 
+    // 쿨타임 적용 (0초면 쿨타임 없음)
+    let updateData = { is_active: false }
+
+    if (cooldownSeconds > 0) {
+      const cooldownUntil = new Date(Date.now() + cooldownSeconds * 1000)
+      updateData.cooldown_until = cooldownUntil.toISOString()
+      console.log('✅ 쿨타임 설정:', cooldownSeconds, '초 →', cooldownUntil.toISOString())
+    } else {
+      updateData.cooldown_until = null // 쿨타임 해제
+      console.log('✅ 쿨타임 없음 (0초 설정)')
+    }
+
     const { data: cooldownData, error: cooldownError } = await supabase
       .from('help_requests')
-      .update({ 
-        is_active: false,
-        cooldown_until: cooldownUntil.toISOString()
-      })
+      .update(updateData)
       .eq('student_id', helpingStudentId)
       .eq('status', 'helping')
       .select()
@@ -183,7 +191,7 @@ export const completeHelp = async (requestingStudentId, helpingStudentId, helpDe
     if (cooldownError) {
       console.error('❌ 쿨타임 설정 실패:', cooldownError)
     } else {
-      console.log('✅ 쿨타임 설정 성공:', cooldownData)
+      console.log('✅ 쿨타임 적용 성공:', cooldownData)
     }
 
     return { success: true }
