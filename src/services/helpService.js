@@ -161,7 +161,7 @@ export const completeHelp = async (requestingStudentId, helpingStudentId, helpDe
     // 4. 도와준 학생의 "도와줄게!" 상태 비활성화 + 쿨타임 설정 (DB에서 조회)
     // 🎯 하드코딩 제거: help_settings 테이블에서 쿨타임 값 조회
     const settings = await getHelpSettingsByStudentId(helpingStudentId)
-    const cooldownSeconds = settings?.cooldown_seconds || DEFAULT_SETTINGS.cooldown_seconds
+    const cooldownSeconds = settings?.cooldown_seconds ?? DEFAULT_SETTINGS.cooldown_seconds
 
     console.log('🎯 쿨타임 설정 조회:', {
       helpingStudentId,
