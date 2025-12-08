@@ -110,8 +110,8 @@ function HelpGiveButton() {
       return
     }
 
-    // 일일 제한 체크 (DB에서 조회한 dailyLimit 사용)
-    if (todayThanksCount >= dailyLimit && myStatus !== 'helping') {
+    // 일일 제한 체크 (DB에서 조회한 dailyLimit 사용, 0은 무제한)
+    if (dailyLimit > 0 && todayThanksCount >= dailyLimit && myStatus !== 'helping') {
       setShowLimitModal(true)
       return
     }
@@ -138,7 +138,7 @@ function HelpGiveButton() {
     }
   }
 
-  const isDisabled = loading || (myStatus !== null && myStatus !== 'helping') || todayThanksCount >= dailyLimit || isInCooldown
+  const isDisabled = loading || (myStatus !== null && myStatus !== 'helping') || (dailyLimit > 0 && todayThanksCount >= dailyLimit) || isInCooldown
 
   return (
     <>
@@ -154,13 +154,13 @@ function HelpGiveButton() {
         >
           <img src="/characters/a-help.png" alt="도와줄게!" className="help-icon" />
           <div style={{ marginTop: '8px' }}>
-            {isInCooldown ? '쉬는중' : (todayThanksCount >= dailyLimit ? '도움완료' : '도와줄게!')}
+            {isInCooldown ? '쉬는중' : (dailyLimit > 0 && todayThanksCount >= dailyLimit ? '도움완료' : '도와줄게!')}
           </div>
           {isInCooldown ? (
             <div style={{ fontSize: '11px', color: '#ff6b6b', marginTop: '4px' }}>
               {remainingSeconds}초 후
             </div>
-          ) : todayThanksCount > 0 && todayThanksCount < dailyLimit && (
+          ) : dailyLimit > 0 && todayThanksCount > 0 && todayThanksCount < dailyLimit && (
             <div style={{ fontSize: '11px', color: '#999', marginTop: '4px' }}>
               {todayThanksCount}/{dailyLimit}회
             </div>
